@@ -1,0 +1,27 @@
+{
+  "name": "congofood",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "backend"
+  ],
+  "scripts": {
+    "dev:backend": "npm run dev --workspace=backend",
+    "dev:client": "npm run start --workspace=apps/client",
+    "dev:livreur": "npm run start --workspace=apps/livreur",
+    "dev:admin": "npm run dev --workspace=apps/admin",
+    "build:types": "npm run build --workspace=packages/types",
+    "build:packages": "npm run build --workspace=packages/types && npm run build --workspace=packages/ui && npm run build --workspace=packages/api-client",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
