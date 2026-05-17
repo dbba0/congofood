@@ -7,6 +7,7 @@ import type { UserRole } from '@congofood/types';
 export interface JwtPayload {
   userId: string;
   role: UserRole;
+  phone: string;
   iat: number;
   exp: number;
 }

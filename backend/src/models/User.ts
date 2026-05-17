@@ -1,9 +1,11 @@
 import { Schema, model, Document } from 'mongoose';
 import type { User, UserRole, UserAddress } from '@congofood/types';
 
-/** Password non présent dans le type public User — ajouté uniquement côté Mongoose */
+/** Champs internes uniquement côté serveur, absents du type public User */
 export interface UserDocument extends Omit<User, '_id'>, Document {
   password?: string;
+  refreshToken?: string;   // stocké hashé SHA-256
+  lastLoginAt?: Date;
 }
 
 const userAddressSchema = new Schema<UserAddress>(
@@ -28,7 +30,7 @@ const userSchema = new Schema<UserDocument>(
       match: /^\+243[0-9]{9}$/,
     },
     email: { type: String, sparse: true, unique: true, lowercase: true },
-    name: { type: String, required: true, trim: true },
+    name: { type: String, default: '', trim: true },
     role: {
       type: String,
       enum: ['client', 'restaurant', 'livreur', 'admin'] as UserRole[],
@@ -37,8 +39,10 @@ const userSchema = new Schema<UserDocument>(
     address: { type: userAddressSchema, required: false },
     deviceToken: { type: String },
     isVerified: { type: Boolean, default: false },
-    // Stocké hashé avec bcrypt — jamais renvoyé dans les réponses API
+    // Champs serveur — jamais renvoyés dans les réponses API
     password: { type: String, select: false },
+    refreshToken: { type: String, select: false },
+    lastLoginAt: { type: Date },
   },
   { timestamps: true }
 );
