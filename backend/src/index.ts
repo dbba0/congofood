@@ -7,6 +7,7 @@ import morgan from 'morgan';
 import mongoose from 'mongoose';
 
 import { env } from './config/env';
+import { setIO } from './config/socket';
 import authRoutes from './routes/auth';
 import userRoutes from './routes/users';
 import restaurantRoutes from './routes/restaurants';
@@ -75,7 +76,6 @@ async function start() {
   }
 }
 
-// Exposer io pour l'utiliser dans les controllers (temps réel livraisons)
-export { io };
+setIO(io);
 
 start();
