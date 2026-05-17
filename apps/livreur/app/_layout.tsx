@@ -5,6 +5,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useAuthStore } from '../store/authStore';
 import { Colors } from '../constants/theme';
+import { loadSession } from '../lib/storage';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -18,13 +19,17 @@ const queryClient = new QueryClient({
 });
 
 export default function RootLayout() {
-  const { isLoading, setLoading } = useAuthStore();
+  const { isLoading, setLoading, setUser } = useAuthStore();
 
   useEffect(() => {
-    // TODO : restaurer la session depuis SecureStore
-    setLoading(false);
+    const session = loadSession();
+    if (session) {
+      setUser(session.user, session.tokens);
+    } else {
+      setLoading(false);
+    }
     SplashScreen.hideAsync();
-  }, [setLoading]);
+  }, [setLoading, setUser]);
 
   if (isLoading) return null;
 
