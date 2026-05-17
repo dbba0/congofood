@@ -1,14 +1,10 @@
 import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import * as SplashScreen from 'expo-splash-screen';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useAuthStore } from '../store/authStore';
 import { Colors } from '../constants/theme';
 import { loadSession } from '../lib/storage';
-
-// Ignorer l'erreur si preventAutoHideAsync est appelé trop tard
-SplashScreen.preventAutoHideAsync().catch(() => {});
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -32,15 +28,11 @@ export default function RootLayout() {
           setLoading(false);
         }
       } catch {
-        // Toujours débloquer le chargement même en cas d'erreur SecureStore
         setLoading(false);
-      } finally {
-        SplashScreen.hideAsync().catch(() => {});
       }
     })();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Ne jamais retourner null — laisser la navigation gérer les redirections
   return (
     <QueryClientProvider client={queryClient}>
       <StatusBar style="light" backgroundColor={Colors.background} />
@@ -49,7 +41,7 @@ export default function RootLayout() {
           headerStyle: { backgroundColor: Colors.background },
           headerTintColor: Colors.textPrimary,
           contentStyle: { backgroundColor: Colors.background },
-          animation: 'slide_from_right',
+          animation: 'fade',
         }}
       >
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
