@@ -22,13 +22,15 @@ export default function RootLayout() {
   const { isLoading, setLoading, setUser } = useAuthStore();
 
   useEffect(() => {
-    const session = loadSession();
-    if (session) {
-      setUser(session.user, session.tokens);
-    } else {
-      setLoading(false);
-    }
-    SplashScreen.hideAsync();
+    (async () => {
+      const session = await loadSession();
+      if (session) {
+        setUser(session.user, session.tokens);
+      } else {
+        setLoading(false);
+      }
+      await SplashScreen.hideAsync();
+    })();
   }, [setLoading, setUser]);
 
   if (isLoading) return null;

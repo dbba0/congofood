@@ -72,7 +72,7 @@ export default function OtpVerifyScreen() {
       expiresIn: 3600,
     };
 
-    saveSession(mockUser, mockTokens);
+    await saveSession(mockUser, mockTokens);
     setUser(mockUser, mockTokens);
     // La redirection vers /(tabs)/dashboard est gérée par (auth)/_layout.tsx
   }

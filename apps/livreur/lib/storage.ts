@@ -1,33 +1,44 @@
-import { MMKV } from 'react-native-mmkv';
+// expo-secure-store est compatible Expo Go (contrairement à react-native-mmkv
+// qui nécessite un build natif). En production (EAS/prebuild), migrer vers MMKV.
+import * as SecureStore from 'expo-secure-store';
 import type { AuthUser, AuthTokens } from '@congofood/types';
 
-const storage = new MMKV({ id: 'congofood-livreur-auth' });
+const KEYS = {
+  user: 'cf_livreur_user',
+  accessToken: 'cf_livreur_access',
+  refreshToken: 'cf_livreur_refresh',
+  expiresIn: 'cf_livreur_expires',
+} as const;
 
-export function saveSession(user: AuthUser, tokens: AuthTokens): void {
-  storage.set('user', JSON.stringify(user));
-  storage.set('accessToken', tokens.accessToken);
-  storage.set('refreshToken', tokens.refreshToken);
-  storage.set('expiresIn', tokens.expiresIn);
+export async function saveSession(user: AuthUser, tokens: AuthTokens): Promise<void> {
+  await Promise.all([
+    SecureStore.setItemAsync(KEYS.user, JSON.stringify(user)),
+    SecureStore.setItemAsync(KEYS.accessToken, tokens.accessToken),
+    SecureStore.setItemAsync(KEYS.refreshToken, tokens.refreshToken),
+    SecureStore.setItemAsync(KEYS.expiresIn, String(tokens.expiresIn)),
+  ]);
 }
 
-export function clearSession(): void {
-  storage.delete('user');
-  storage.delete('accessToken');
-  storage.delete('refreshToken');
-  storage.delete('expiresIn');
+export async function clearSession(): Promise<void> {
+  await Promise.all(Object.values(KEYS).map((k) => SecureStore.deleteItemAsync(k)));
 }
 
-export function loadSession(): { user: AuthUser; tokens: AuthTokens } | null {
-  const userJson = storage.getString('user');
-  const accessToken = storage.getString('accessToken');
-  const refreshToken = storage.getString('refreshToken');
-  const expiresIn = storage.getNumber('expiresIn');
+export async function loadSession(): Promise<{ user: AuthUser; tokens: AuthTokens } | null> {
+  const [userJson, accessToken, refreshToken, expiresInStr] = await Promise.all([
+    SecureStore.getItemAsync(KEYS.user),
+    SecureStore.getItemAsync(KEYS.accessToken),
+    SecureStore.getItemAsync(KEYS.refreshToken),
+    SecureStore.getItemAsync(KEYS.expiresIn),
+  ]);
 
-  if (!userJson || !accessToken || !refreshToken || expiresIn == null) return null;
+  if (!userJson || !accessToken || !refreshToken || !expiresInStr) return null;
 
   try {
     const user = JSON.parse(userJson) as AuthUser;
-    return { user, tokens: { accessToken, refreshToken, expiresIn } };
+    return {
+      user,
+      tokens: { accessToken, refreshToken, expiresIn: Number(expiresInStr) },
+    };
   } catch {
     return null;
   }
