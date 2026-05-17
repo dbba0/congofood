@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
+import { StyleSheet } from 'react-native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useAuthStore } from '../store/authStore';
 import { Colors } from '../constants/theme';
@@ -13,6 +15,10 @@ const queryClient = new QueryClient({
       retry: 1,
     },
   },
+});
+
+const styles = StyleSheet.create({
+  root: { flex: 1 },
 });
 
 export default function RootLayout() {
@@ -34,20 +40,22 @@ export default function RootLayout() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <StatusBar style="light" backgroundColor={Colors.background} />
-      <Stack
-        screenOptions={{
-          headerStyle: { backgroundColor: Colors.background },
-          headerTintColor: Colors.textPrimary,
-          contentStyle: { backgroundColor: Colors.background },
-          animation: 'fade',
-        }}
-      >
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="mission/[id]" options={{ title: 'Mission' }} />
-      </Stack>
-    </QueryClientProvider>
+    <GestureHandlerRootView style={styles.root}>
+      <QueryClientProvider client={queryClient}>
+        <StatusBar style="light" backgroundColor={Colors.background} />
+        <Stack
+          screenOptions={{
+            headerStyle: { backgroundColor: Colors.background },
+            headerTintColor: Colors.textPrimary,
+            contentStyle: { backgroundColor: Colors.background },
+            animation: 'fade',
+          }}
+        >
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="mission/[id]" options={{ headerShown: false }} />
+        </Stack>
+      </QueryClientProvider>
+    </GestureHandlerRootView>
   );
 }

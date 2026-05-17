@@ -11,12 +11,34 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { Colors, Typography, Spacing, BorderRadius } from '../../constants/theme';
+import { useAuthStore } from '../../store/authStore';
+import { saveSession } from '../../lib/storage';
+import type { AuthUser, AuthTokens } from '@congofood/types';
 
 export default function LivreurLoginScreen() {
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
+  const { setUser } = useAuthStore();
 
   const isValid = phone.replace(/\D/g, '').length >= 9;
+
+  async function handleDevSkip() {
+    const mockUser: AuthUser = {
+      _id: 'dev_livreur_001',
+      phone: '+243810000000',
+      name: 'Livreur Dev',
+      role: 'livreur',
+      isVerified: true,
+      createdAt: new Date().toISOString(),
+    };
+    const mockTokens: AuthTokens = {
+      accessToken: `dev_access_${Date.now()}`,
+      refreshToken: `dev_refresh_${Date.now()}`,
+      expiresIn: 3600,
+    };
+    await saveSession(mockUser, mockTokens);
+    setUser(mockUser, mockTokens);
+  }
 
   async function handleSend() {
     if (!isValid || loading) return;
@@ -87,6 +109,13 @@ export default function LivreurLoginScreen() {
             )}
           </TouchableOpacity>
         </View>
+
+        {/* Bouton dev — sauter le backend */}
+        {__DEV__ && (
+          <TouchableOpacity style={styles.devSkip} onPress={handleDevSkip} activeOpacity={0.7}>
+            <Text style={styles.devSkipText}>⚡ Mode dev — Accéder sans backend</Text>
+          </TouchableOpacity>
+        )}
 
         {/* Footer */}
         <Text style={styles.terms}>
@@ -208,5 +237,18 @@ const styles = StyleSheet.create({
   termsLink: {
     color: Colors.textSecondary,
     textDecorationLine: 'underline',
+  },
+  devSkip: {
+    borderWidth: 1,
+    borderColor: Colors.lime,
+    borderStyle: 'dashed',
+    borderRadius: BorderRadius.md,
+    paddingVertical: Spacing.sm,
+    alignItems: 'center',
+  },
+  devSkipText: {
+    color: Colors.lime,
+    fontSize: Typography.fontSize.sm,
+    fontWeight: '600',
   },
 });
