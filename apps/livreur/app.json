@@ -12,7 +12,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#0A0A0F"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "cd.congofood.livreur"
@@ -39,7 +41,8 @@
           "locationAlwaysAndWhenInUsePermission": "CongoFood Livreur a besoin de votre localisation pour assigner les missions proches.",
           "locationAlwaysPermission": "Votre position est partagée avec les clients pendant une livraison."
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true

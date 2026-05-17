@@ -12,7 +12,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#0A0A0F"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "cd.congofood.client"
@@ -38,7 +40,8 @@
         {
           "locationAlwaysAndWhenInUsePermission": "CongoFood a besoin de votre localisation pour trouver les restaurants proches."
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
