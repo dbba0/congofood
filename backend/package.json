@@ -37,7 +37,7 @@
     }
   },
   "dependencies": {
-    "@congofood/types": "*",
+    "@congofood/types": "file:../packages/types",
     "africastalking": "^0.8.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
