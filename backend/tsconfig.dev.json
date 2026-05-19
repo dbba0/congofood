@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "..",
+    "paths": {
+      "@congofood/types": ["../packages/types/src"]
+    }
+  },
+  "include": ["src/**/*", "../packages/types/src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
