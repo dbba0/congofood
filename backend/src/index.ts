@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 
 import { env } from './config/env';
 import { setIO } from './config/socket';
+import healthRoutes from './routes/health';
 import authRoutes from './routes/auth';
 import userRoutes from './routes/users';
 import restaurantRoutes from './routes/restaurants';
@@ -19,6 +20,9 @@ import paymentRoutes from './routes/payments';
 const app = express();
 const httpServer = createServer(app);
 
+// Health check en premier — Railway l'appelle sans auth
+app.use('/health', healthRoutes);
+
 // Socket.io pour le suivi en temps réel des livraisons
 const io = new SocketServer(httpServer, {
   cors: {
@@ -27,14 +31,22 @@ const io = new SocketServer(httpServer, {
   },
 });
 
+// --- Origines CORS autorisées (inclut localhost pour dev Expo) ---
+const allowedOrigins = [
+  'http://localhost:8081',
+  'http://localhost:3000',
+  process.env.CLIENT_URL,
+  process.env.ADMIN_URL,
+].filter(Boolean) as string[];
+
 // --- Middlewares ---
 app.use(helmet());
-app.use(cors({ origin: [env.CLIENT_URL, env.ADMIN_URL], credentials: true }));
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(morgan(env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// --- Routes ---
+// --- Routes API ---
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/restaurants', restaurantRoutes);
@@ -43,20 +55,20 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/deliveries', deliveryRoutes);
 app.use('/api/payments', paymentRoutes);
 
-app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
-
 // --- Gestionnaire d'erreurs global ---
 app.use(
   (
-    err: Error,
+    err: Error & { status?: number },
     _req: express.Request,
     res: express.Response,
     _next: express.NextFunction
   ) => {
     console.error(err.stack);
-    res.status(500).json({ success: false, message: 'Erreur interne du serveur' });
+    res.status(err.status ?? 500).json({
+      success: false,
+      error:
+        process.env.NODE_ENV === 'production' ? 'Erreur serveur' : err.message,
+    });
   }
 );
 
