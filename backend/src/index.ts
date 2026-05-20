@@ -74,18 +74,18 @@ app.use(
 
 // --- Connexion MongoDB + démarrage ---
 async function start() {
+  const PORT = process.env.PORT || 3000;
+  httpServer.listen(PORT, () => {
+    console.log(`✅ Serveur sur port ${PORT}`);
+    console.log(`🌍 Environnement : ${env.NODE_ENV}`);
+  });
+
   try {
     await mongoose.connect(env.MONGODB_URI);
     console.log('✅ MongoDB connecté');
-
-    const PORT = process.env.PORT || 3000;
-    httpServer.listen(PORT, () => {
-      console.log(`✅ Serveur démarré sur le port ${PORT}`);
-      console.log(`🌍 Environnement : ${env.NODE_ENV}`);
-    });
   } catch (err) {
-    console.error('❌ Impossible de démarrer le serveur :', err);
-    process.exit(1);
+    console.error('❌ MongoDB erreur:', (err as Error).message);
+    // Ne pas process.exit — laisser Mongoose retry automatiquement
   }
 }
 
