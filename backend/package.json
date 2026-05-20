@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register --project tsconfig.dev.json src/index.ts",
-    "prebuild": "cd ../packages/types && npx tsc",
-    "build": "tsc",
+    "build:types": "tsc -p ../packages/types/tsconfig.json",
+    "build": "npm run build:types && tsc -p tsconfig.json",
     "start": "node dist/index.js",
     "typecheck": "tsc --noEmit",
     "test": "jest --runInBand",
@@ -51,22 +51,22 @@
     "morgan": "^1.10.0",
     "socket.io": "^4.7.5",
     "winston": "^3.13.0",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "typescript": "^5.4.5",
+    "@types/node": "^20.14.2",
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/morgan": "^1.9.9"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
-    "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
     "@types/jest": "^29.5.14",
-    "@types/jsonwebtoken": "^9.0.6",
-    "@types/morgan": "^1.9.9",
-    "@types/node": "^20.14.2",
     "@types/supertest": "^7.2.0",
     "jest": "^29.7.0",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.9",
     "ts-node-dev": "^2.0.0",
-    "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.4.5"
+    "tsconfig-paths": "^4.2.0"
   }
 }
