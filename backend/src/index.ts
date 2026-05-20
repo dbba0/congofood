@@ -78,8 +78,9 @@ async function start() {
     await mongoose.connect(env.MONGODB_URI);
     console.log('✅ MongoDB connecté');
 
-    httpServer.listen(env.PORT, () => {
-      console.log(`🚀 CongoFood API démarrée sur le port ${env.PORT}`);
+    const PORT = process.env.PORT || 3000;
+    httpServer.listen(PORT, () => {
+      console.log(`✅ Serveur démarré sur le port ${PORT}`);
       console.log(`🌍 Environnement : ${env.NODE_ENV}`);
     });
   } catch (err) {
