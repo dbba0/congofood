@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 export interface EmptyStateProps {
   emoji?: string;
@@ -35,11 +35,11 @@ export function EmptyState({
   );
 }
 
-const styles = StyleSheet.create({
+const styles = {
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
     padding: 40,
     gap: 12,
   },
@@ -50,15 +50,13 @@ const styles = StyleSheet.create({
   title: {
     color: '#FFFFFF',
     fontSize: 18,
-    fontFamily: 'Syne-Bold',
-    fontWeight: '700',
-    textAlign: 'center',
+    fontWeight: '700' as const,
+    textAlign: 'center' as const,
   },
   subtitle: {
     color: '#9CA3AF',
     fontSize: 14,
-    fontFamily: 'DMSans-Regular',
-    textAlign: 'center',
+    textAlign: 'center' as const,
     lineHeight: 20,
   },
   btn: {
@@ -71,7 +69,6 @@ const styles = StyleSheet.create({
   btnText: {
     color: '#0A0A0F',
     fontSize: 15,
-    fontFamily: 'DMSans-Bold',
-    fontWeight: '700',
+    fontWeight: '700' as const,
   },
-});
+};

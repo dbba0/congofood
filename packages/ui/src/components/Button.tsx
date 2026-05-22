@@ -2,7 +2,6 @@
 import React from 'react';
 import {
   ActivityIndicator,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -96,21 +95,20 @@ export function Button({
   );
 }
 
-const styles = StyleSheet.create({
+const styles = {
   base: {
     borderRadius: 10,
     paddingHorizontal: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
     minWidth: 44,
   },
   inner: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
   },
   label: {
-    fontWeight: '700',
-    fontFamily: 'DMSans-Bold',
+    fontWeight: '700' as const,
   },
   iconLeft: {
     marginRight: 8,
@@ -118,4 +116,4 @@ const styles = StyleSheet.create({
   iconRight: {
     marginLeft: 8,
   },
-});
+};

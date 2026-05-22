@@ -1,190 +1,372 @@
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+// Écran panier — liste articles, contrôles quantité, note, récap CDF
+import { useState } from 'react';
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  TextInput,
+  SafeAreaView,
+} from 'react-native';
 import { useRouter } from 'expo-router';
+import { Image } from 'expo-image';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors, Typography, Spacing, BorderRadius } from '../constants/theme';
 import { useCartStore } from '../store/cartStore';
+import { EmptyState } from '@congofood/ui';
+
+const LIVRAISON_FEE = 1500; // CDF
 
 export default function CartScreen() {
   const router = useRouter();
-  const { items, total, currency, updateQty, removeItem } = useCartStore((s) => ({
+  const { items, total, currency, updateQty, removeItem, clearCart } = useCartStore((s) => ({
     items: s.items,
     total: s.total(),
     currency: s.currency,
     updateQty: s.updateQty,
     removeItem: s.removeItem,
+    clearCart: s.clearCart,
   }));
+  const [note, setNote] = useState('');
+
+  const subtotal = total;
+  const grandTotal = subtotal + LIVRAISON_FEE;
 
   if (items.length === 0) {
     return (
-      <View style={styles.empty}>
-        <Text style={styles.emptyIcon}>🛒</Text>
-        <Text style={styles.emptyTitle}>Panier vide</Text>
-        <Text style={styles.emptySubtitle}>Ajoutez des produits pour commander</Text>
+      <View style={styles.emptyRoot}>
+        <EmptyState
+          emoji="🛒"
+          title="Panier vide"
+          subtitle="Ajoutez des produits pour passer commande"
+          actionLabel="Explorer les restaurants"
+          onAction={() => router.replace('/(tabs)/home')}
+        />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.root}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>
+          Mon panier · <Text style={styles.headerCount}>{items.length} article{items.length > 1 ? 's' : ''}</Text>
+        </Text>
+        <TouchableOpacity onPress={clearCart} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+          <Text style={styles.clearText}>Vider</Text>
+        </TouchableOpacity>
+      </View>
+
       <FlatList
         data={items}
         keyExtractor={(item) => item.product._id}
         contentContainerStyle={styles.list}
-        renderItem={({ item }) => (
-          <View style={styles.item}>
-            <View style={styles.itemInfo}>
-              <Text style={styles.itemName}>{item.product.name}</Text>
-              <Text style={styles.itemPrice}>
-                {(item.unitPrice * item.qty).toLocaleString('fr-CD')} {currency}
-              </Text>
+        showsVerticalScrollIndicator={false}
+        ListFooterComponent={
+          <>
+            {/* Note pour le restaurant */}
+            <View style={styles.noteSection}>
+              <Text style={styles.noteLabel}>Note pour le restaurant</Text>
+              <TextInput
+                style={styles.noteInput}
+                placeholder="Pas de piment, sans oignon..."
+                placeholderTextColor={Colors.textMuted}
+                value={note}
+                onChangeText={setNote}
+                multiline
+                numberOfLines={3}
+              />
             </View>
-            <View style={styles.qtyRow}>
-              <TouchableOpacity
-                style={styles.qtyBtn}
-                onPress={() => updateQty(item.product._id, item.qty - 1)}
-              >
-                <Text style={styles.qtyBtnText}>−</Text>
-              </TouchableOpacity>
-              <Text style={styles.qty}>{item.qty}</Text>
-              <TouchableOpacity
-                style={styles.qtyBtn}
-                onPress={() => updateQty(item.product._id, item.qty + 1)}
-              >
-                <Text style={styles.qtyBtnText}>+</Text>
-              </TouchableOpacity>
+
+            {/* Récap financier */}
+            <View style={styles.recap}>
+              <View style={styles.recapRow}>
+                <Text style={styles.recapLabel}>Sous-total</Text>
+                <Text style={styles.recapValue}>
+                  {subtotal.toLocaleString('fr-CD')} {currency}
+                </Text>
+              </View>
+              <View style={styles.recapRow}>
+                <Text style={styles.recapLabel}>Livraison</Text>
+                <Text style={styles.recapValue}>
+                  {LIVRAISON_FEE.toLocaleString('fr-CD')} {currency}
+                </Text>
+              </View>
+              <View style={[styles.recapRow, styles.totalRow]}>
+                <Text style={styles.totalLabel}>Total</Text>
+                <Text style={styles.totalValue}>
+                  {grandTotal.toLocaleString('fr-CD')} {currency}
+                </Text>
+              </View>
             </View>
-          </View>
+          </>
+        }
+        renderItem={({ item, index }) => (
+          <Animated.View entering={FadeInDown.delay(index * 50).duration(300)}>
+            <View style={styles.itemCard}>
+              {/* Image produit */}
+              {item.product.image ? (
+                <Image
+                  source={{ uri: item.product.image }}
+                  style={styles.itemImage}
+                  contentFit="cover"
+                />
+              ) : (
+                <View style={[styles.itemImage, styles.itemImagePlaceholder]}>
+                  <Text style={styles.itemImageEmoji}>🍽️</Text>
+                </View>
+              )}
+
+              <View style={styles.itemContent}>
+                <Text style={styles.itemName} numberOfLines={2}>
+                  {item.product.name}
+                </Text>
+                <Text style={styles.itemUnitPrice}>
+                  {item.unitPrice.toLocaleString('fr-CD')} {currency}
+                </Text>
+
+                <View style={styles.itemFooter}>
+                  {/* Contrôles quantité */}
+                  <View style={styles.qtyRow}>
+                    <TouchableOpacity
+                      style={styles.qtyBtn}
+                      onPress={() => updateQty(item.product._id, item.qty - 1)}
+                    >
+                      <Text style={styles.qtyBtnText}>−</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.qty}>{item.qty}</Text>
+                    <TouchableOpacity
+                      style={styles.qtyBtn}
+                      onPress={() => updateQty(item.product._id, item.qty + 1)}
+                    >
+                      <Text style={styles.qtyBtnText}>+</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  {/* Prix total ligne */}
+                  <Text style={styles.itemTotal}>
+                    {(item.unitPrice * item.qty).toLocaleString('fr-CD')} {currency}
+                  </Text>
+
+                  {/* Supprimer */}
+                  <TouchableOpacity
+                    onPress={() => removeItem(item.product._id)}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <Ionicons name="trash-outline" size={18} color={Colors.error} />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Animated.View>
         )}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        ItemSeparatorComponent={() => <View style={{ height: Spacing.sm }} />}
       />
 
+      {/* Footer sticky */}
       <View style={styles.footer}>
-        <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>Total</Text>
-          <Text style={styles.totalValue}>
-            {total.toLocaleString('fr-CD')} {currency}
-          </Text>
-        </View>
         <TouchableOpacity
-          style={styles.checkoutBtn}
-          onPress={() => router.push('/checkout')}
+          style={styles.cta}
+          onPress={() => router.push({ pathname: '/checkout', params: { note } })}
           activeOpacity={0.85}
         >
-          <Text style={styles.checkoutBtnText}>Commander</Text>
+          <Text style={styles.ctaText}>
+            Commander · {grandTotal.toLocaleString('fr-CD')} {currency}
+          </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
+const styles = {
+  emptyRoot: {
     flex: 1,
     backgroundColor: Colors.background,
+  },
+  root: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.base,
+    paddingVertical: Spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  headerTitle: {
+    fontFamily: 'Syne_700Bold',
+    fontSize: Typography.fontSize.md,
+    color: Colors.textPrimary,
+  },
+  headerCount: {
+    color: Colors.textSecondary,
+    fontFamily: 'DMSans_400Regular',
+  },
+  clearText: {
+    fontFamily: 'DMSans_400Regular',
+    fontSize: Typography.fontSize.sm,
+    color: Colors.error,
   },
   list: {
     padding: Spacing.base,
   },
-  item: {
+  itemCard: {
+    flexDirection: 'row',
     backgroundColor: Colors.surface,
     borderRadius: BorderRadius.md,
-    padding: Spacing.md,
+    padding: Spacing.sm,
+    gap: Spacing.sm,
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
-  itemInfo: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: Spacing.sm,
+  itemImage: {
+    width: 72,
+    height: 72,
+    borderRadius: BorderRadius.sm,
   },
-  itemName: {
-    fontSize: Typography.fontSize.base,
-    color: Colors.textPrimary,
-    fontWeight: '500',
-    flex: 1,
-    marginRight: Spacing.sm,
-  },
-  itemPrice: {
-    fontSize: Typography.fontSize.base,
-    color: Colors.orange,
-    fontWeight: '600',
-  },
-  qtyRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  qtyBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+  itemImagePlaceholder: {
     backgroundColor: Colors.surfaceElevated,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  itemImageEmoji: {
+    fontSize: 24,
+  },
+  itemContent: {
+    flex: 1,
+  },
+  itemName: {
+    fontFamily: 'DMSans_500Medium',
+    fontSize: Typography.fontSize.base,
+    color: Colors.textPrimary,
+    marginBottom: 2,
+  },
+  itemUnitPrice: {
+    fontFamily: 'DMSans_400Regular',
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textSecondary,
+    marginBottom: Spacing.sm,
+  },
+  itemFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  qtyRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.surfaceElevated,
+    borderRadius: BorderRadius.md,
+    overflow: 'hidden',
+  },
+  qtyBtn: {
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   qtyBtnText: {
-    fontSize: Typography.fontSize.lg,
+    fontSize: Typography.fontSize.md,
     color: Colors.textPrimary,
     lineHeight: 20,
   },
   qty: {
-    fontSize: Typography.fontSize.md,
+    fontFamily: 'DMSans_500Medium',
+    fontSize: Typography.fontSize.base,
     color: Colors.textPrimary,
-    fontWeight: '600',
-    marginHorizontal: Spacing.md,
-    minWidth: 24,
+    minWidth: 28,
     textAlign: 'center',
   },
-  separator: {
-    height: Spacing.sm,
+  itemTotal: {
+    flex: 1,
+    fontFamily: 'Syne_600SemiBold',
+    fontSize: Typography.fontSize.sm,
+    color: Colors.lime,
+    textAlign: 'right',
   },
-  footer: {
+  noteSection: {
+    marginTop: Spacing.base,
     backgroundColor: Colors.surface,
-    borderTopColor: Colors.border,
-    borderTopWidth: 1,
+    borderRadius: BorderRadius.md,
     padding: Spacing.base,
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
-  totalRow: {
+  noteLabel: {
+    fontFamily: 'DMSans_500Medium',
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textSecondary,
+    marginBottom: Spacing.sm,
+  },
+  noteInput: {
+    fontFamily: 'DMSans_400Regular',
+    fontSize: Typography.fontSize.base,
+    color: Colors.textPrimary,
+    minHeight: 72,
+    textAlignVertical: 'top',
+  },
+  recap: {
+    marginTop: Spacing.base,
+    backgroundColor: Colors.surface,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.base,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    gap: Spacing.sm,
+    marginBottom: Spacing.base,
+  },
+  recapRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: Spacing.base,
   },
-  totalLabel: {
-    fontSize: Typography.fontSize.md,
-    color: Colors.textSecondary,
-  },
-  totalValue: {
-    fontSize: Typography.fontSize.md,
-    color: Colors.textPrimary,
-    fontWeight: 'bold',
-  },
-  checkoutBtn: {
-    backgroundColor: Colors.lime,
-    borderRadius: BorderRadius.lg,
-    paddingVertical: Spacing.md,
-    alignItems: 'center',
-  },
-  checkoutBtnText: {
-    fontSize: Typography.fontSize.md,
-    color: Colors.textInverse,
-    fontWeight: 'bold',
-  },
-  empty: {
-    flex: 1,
-    backgroundColor: Colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: Spacing.xl,
-  },
-  emptyIcon: {
-    fontSize: 48,
-    marginBottom: Spacing.base,
-  },
-  emptyTitle: {
-    fontSize: Typography.fontSize.xl,
-    color: Colors.textPrimary,
-    fontWeight: 'bold',
-    marginBottom: Spacing.xs,
-  },
-  emptySubtitle: {
+  recapLabel: {
+    fontFamily: 'DMSans_400Regular',
     fontSize: Typography.fontSize.base,
     color: Colors.textSecondary,
-    textAlign: 'center',
   },
-});
+  recapValue: {
+    fontFamily: 'DMSans_400Regular',
+    fontSize: Typography.fontSize.base,
+    color: Colors.textPrimary,
+  },
+  totalRow: {
+    paddingTop: Spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+    marginTop: Spacing.xs,
+  },
+  totalLabel: {
+    fontFamily: 'Syne_700Bold',
+    fontSize: Typography.fontSize.md,
+    color: Colors.textPrimary,
+  },
+  totalValue: {
+    fontFamily: 'Syne_700Bold',
+    fontSize: Typography.fontSize.md,
+    color: Colors.lime,
+  },
+  footer: {
+    padding: Spacing.base,
+    backgroundColor: Colors.surface,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+  },
+  cta: {
+    backgroundColor: Colors.lime,
+    borderRadius: BorderRadius.lg,
+    height: 56,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  ctaText: {
+    fontFamily: 'Syne_700Bold',
+    fontSize: Typography.fontSize.base,
+    color: Colors.textInverse,
+  },
+} as const;

@@ -18,6 +18,7 @@
     "lint": "npm run lint --workspaces --if-present"
   },
   "devDependencies": {
+    "metro-runtime": "^0.83.7",
     "typescript": "^5.4.5"
   },
   "engines": {

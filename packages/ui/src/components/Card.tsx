@@ -1,7 +1,6 @@
 // Carte de contenu CongoFood — cliquable optionnelle, accent couleur gauche
 import React from 'react';
 import {
-  StyleSheet,
   TouchableOpacity,
   View,
   type ViewStyle,
@@ -48,11 +47,11 @@ export function Card({
   return container;
 }
 
-const styles = StyleSheet.create({
+const styles = {
   card: {
     backgroundColor: '#1A1A2E',
     borderWidth: 1,
     borderColor: '#2D2D3D',
-    overflow: 'hidden',
+    overflow: 'hidden' as const,
   },
-});
+};

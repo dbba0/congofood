@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, View, type ViewStyle } from 'react-native';
+import { Animated, View, type ViewStyle } from 'react-native';
 
 export interface SkeletonLoaderProps {
   width?: number | string;
@@ -53,13 +53,13 @@ export function SkeletonRestaurantCard() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = {
   base: {
     backgroundColor: '#2D2D3D',
   },
   card: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     gap: 12,
     padding: 12,
     backgroundColor: '#1A1A2E',
@@ -71,4 +71,4 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 8,
   },
-});
+};

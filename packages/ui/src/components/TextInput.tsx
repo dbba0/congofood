@@ -1,7 +1,6 @@
 // Champ de saisie CongoFood — label, error, hint, focus coloré
 import React, { useState } from 'react';
 import {
-  StyleSheet,
   Text,
   TextInput as RNTextInput,
   View,
@@ -84,19 +83,18 @@ export function TextInput({
   );
 }
 
-const styles = StyleSheet.create({
+const styles = {
   wrapper: {
     gap: 6,
   },
   label: {
     fontSize: 11,
     color: '#9CA3AF',
-    fontFamily: 'DMSans-Medium',
     letterSpacing: 0.5,
   },
   inputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     backgroundColor: '#1A1A2E',
     borderRadius: 8,
     borderWidth: 1.5,
@@ -107,24 +105,21 @@ const styles = StyleSheet.create({
     flex: 1,
     color: '#FFFFFF',
     fontSize: 15,
-    fontFamily: 'DMSans-Regular',
     paddingVertical: 12,
   },
   inputDisabled: {
     opacity: 0.5,
   },
   sideElement: {
-    justifyContent: 'center',
+    justifyContent: 'center' as const,
     paddingHorizontal: 4,
   },
   error: {
     fontSize: 12,
     color: '#EF4444',
-    fontFamily: 'DMSans-Regular',
   },
   hint: {
     fontSize: 12,
     color: '#4B5563',
-    fontFamily: 'DMSans-Regular',
   },
-});
+};

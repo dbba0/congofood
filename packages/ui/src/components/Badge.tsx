@@ -1,6 +1,6 @@
 // Badge statut/catégorie CongoFood — 7 variantes colorées
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 export interface BadgeProps {
   label: string;
@@ -45,13 +45,12 @@ export function Badge({ label, variant, size = 'md' }: BadgeProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = {
   base: {
     borderRadius: 99,
-    alignSelf: 'flex-start',
+    alignSelf: 'flex-start' as const,
   },
   label: {
-    fontWeight: '700',
-    fontFamily: 'DMSans-Bold',
+    fontWeight: '700' as const,
   },
-});
+};

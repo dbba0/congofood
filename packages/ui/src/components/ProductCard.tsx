@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Image,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -83,13 +82,13 @@ export function ProductCard({
   );
 }
 
-const styles = StyleSheet.create({
+const styles = {
   card: {
     backgroundColor: '#1A1A2E',
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#2D2D3D',
-    flexDirection: 'row',
+    flexDirection: 'row' as const,
     padding: 12,
     gap: 12,
   },
@@ -99,30 +98,27 @@ const styles = StyleSheet.create({
   info: {
     flex: 1,
     gap: 4,
-    justifyContent: 'center',
+    justifyContent: 'center' as const,
   },
   name: {
     color: '#FFFFFF',
     fontSize: 14,
-    fontFamily: 'DMSans-Bold',
-    fontWeight: '700',
+    fontWeight: '700' as const,
   },
   description: {
     color: '#9CA3AF',
     fontSize: 12,
-    fontFamily: 'DMSans-Regular',
     lineHeight: 17,
   },
   price: {
     color: '#C8FF57',
     fontSize: 14,
-    fontFamily: 'DMSans-Bold',
-    fontWeight: '700',
+    fontWeight: '700' as const,
     marginTop: 4,
   },
   right: {
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    alignItems: 'center' as const,
+    justifyContent: 'space-between' as const,
     gap: 8,
   },
   image: {
@@ -132,15 +128,15 @@ const styles = StyleSheet.create({
   },
   imagePlaceholder: {
     backgroundColor: '#2D2D3D',
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
   },
   imagePlaceholderText: {
     fontSize: 28,
   },
   qtyRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     gap: 8,
   },
   qtyBtn: {
@@ -149,8 +145,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1.5,
     borderColor: '#2D2D3D',
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
   },
   addBtn: {
     backgroundColor: '#C8FF57',
@@ -159,7 +155,7 @@ const styles = StyleSheet.create({
   qtyBtnText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '700' as const,
     lineHeight: 18,
   },
   addBtnText: {
@@ -168,14 +164,12 @@ const styles = StyleSheet.create({
   qtyCount: {
     color: '#FFFFFF',
     fontSize: 14,
-    fontFamily: 'DMSans-Bold',
-    fontWeight: '700',
+    fontWeight: '700' as const,
     minWidth: 16,
-    textAlign: 'center',
+    textAlign: 'center' as const,
   },
   unavailable: {
     color: '#4B5563',
     fontSize: 10,
-    fontFamily: 'DMSans-Regular',
   },
-});
+};

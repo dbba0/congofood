@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Animated, Text, TouchableOpacity } from 'react-native';
 
 export type ToastVariant = 'success' | 'error' | 'warning' | 'info';
 
@@ -83,14 +83,14 @@ export function Toast({
   );
 }
 
-const styles = StyleSheet.create({
+const styles = {
   container: {
-    position: 'absolute',
+    position: 'absolute' as const,
     top: 56,
     left: 16,
     right: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     gap: 10,
     padding: 14,
     borderRadius: 10,
@@ -104,20 +104,19 @@ const styles = StyleSheet.create({
   },
   icon: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '700' as const,
     width: 20,
-    textAlign: 'center',
+    textAlign: 'center' as const,
   },
   message: {
     flex: 1,
     fontSize: 14,
-    fontFamily: 'DMSans-Medium',
-    fontWeight: '500',
+    fontWeight: '500' as const,
     lineHeight: 18,
   },
   close: {
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '700' as const,
     opacity: 0.7,
   },
-});
+};

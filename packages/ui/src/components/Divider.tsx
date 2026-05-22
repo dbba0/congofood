@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, type ViewStyle } from 'react-native';
+import { Text, View, type ViewStyle } from 'react-native';
 
 export interface DividerProps {
   label?: string;
@@ -31,10 +31,10 @@ export function Divider({
   );
 }
 
-const styles = StyleSheet.create({
+const styles = {
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     gap: 12,
   },
   line: {
@@ -43,6 +43,5 @@ const styles = StyleSheet.create({
   label: {
     color: '#4B5563',
     fontSize: 12,
-    fontFamily: 'DMSans-Regular',
   },
-});
+};

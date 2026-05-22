@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Linking,
-  StyleSheet,
   Text,
   TouchableOpacity,
   type ViewStyle,
@@ -40,11 +39,11 @@ export function WhatsAppButton({
   );
 }
 
-const styles = StyleSheet.create({
+const styles = {
   btn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
     gap: 8,
     backgroundColor: '#075E54',
     paddingHorizontal: 20,
@@ -58,7 +57,6 @@ const styles = StyleSheet.create({
   label: {
     color: '#FFFFFF',
     fontSize: 15,
-    fontFamily: 'DMSans-Bold',
-    fontWeight: '700',
+    fontWeight: '700' as const,
   },
-});
+};

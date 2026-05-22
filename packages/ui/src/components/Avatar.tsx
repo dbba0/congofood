@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, Text, View } from 'react-native';
 
 export interface AvatarProps {
   name?: string;
@@ -52,23 +52,22 @@ export function Avatar({ name, imageUrl, size = 40, online }: AvatarProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = {
   image: {
     backgroundColor: '#2D2D3D',
   },
   fallback: {
     backgroundColor: '#2D2D3D',
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
   },
   initial: {
     color: '#E85D04',
-    fontFamily: 'DMSans-Bold',
-    fontWeight: '700',
+    fontWeight: '700' as const,
   },
   dot: {
-    position: 'absolute',
+    position: 'absolute' as const,
     borderWidth: 2,
     borderColor: '#111118',
   },
-});
+};

@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Image,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -73,14 +72,14 @@ export function RestaurantCard({
   );
 }
 
-const styles = StyleSheet.create({
+const styles = {
   card: {
     backgroundColor: '#1A1A2E',
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#2D2D3D',
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     padding: 12,
     gap: 12,
   },
@@ -88,7 +87,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   logoBox: {
-    position: 'relative',
+    position: 'relative' as const,
   },
   logo: {
     width: 60,
@@ -97,27 +96,29 @@ const styles = StyleSheet.create({
   },
   logoPlaceholder: {
     backgroundColor: '#2D2D3D',
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
   },
   logoPlaceholderText: {
     color: '#E85D04',
     fontSize: 24,
-    fontFamily: 'Syne-Bold',
-    fontWeight: '700',
+    fontWeight: '700' as const,
   },
   closedOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    position: 'absolute' as const,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     backgroundColor: 'rgba(0,0,0,0.55)',
     borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
   },
   closedLabel: {
     color: '#FFFFFF',
     fontSize: 10,
-    fontFamily: 'DMSans-Bold',
-    fontWeight: '700',
+    fontWeight: '700' as const,
   },
   info: {
     flex: 1,
@@ -126,24 +127,21 @@ const styles = StyleSheet.create({
   name: {
     color: '#FFFFFF',
     fontSize: 15,
-    fontFamily: 'DMSans-Bold',
-    fontWeight: '700',
+    fontWeight: '700' as const,
   },
   category: {
     color: '#9CA3AF',
     fontSize: 12,
-    fontFamily: 'DMSans-Regular',
   },
   meta: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     gap: 4,
     marginTop: 2,
   },
   metaText: {
     color: '#9CA3AF',
     fontSize: 11,
-    fontFamily: 'DMSans-Regular',
   },
   dot: {
     color: '#4B5563',
@@ -152,7 +150,6 @@ const styles = StyleSheet.create({
   rating: {
     color: '#F59E0B',
     fontSize: 11,
-    fontFamily: 'DMSans-Medium',
-    fontWeight: '500',
+    fontWeight: '500' as const,
   },
-});
+};
