@@ -1,7 +1,7 @@
 // Client HTTP avec injection automatique du token et logique de refresh
 import { StorageService, STORAGE_KEYS } from './storage';
 import { API } from '../constants/api';
-import type { ApiResponse, AuthTokens } from '@congofood/types';
+import type { ApiResponse, AuthTokens } from '@wapi/types';
 
 // Indicateur pour éviter les boucles infinies de refresh
 let isRefreshing = false;
@@ -47,17 +47,24 @@ export async function apiRequest<T>(
   };
   if (accessToken) headers['Authorization'] = `Bearer ${accessToken}`;
 
-  let response = await fetch(url, { ...options, headers });
+  // Timeout 30 secondes — réseau 3G instable à Kinshasa
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+  let response = await fetch(url, { ...options, headers, signal: controller.signal });
+  clearTimeout(timeoutId);
 
   // Si 401 → tenter un refresh puis rejouer la requête
   if (response.status === 401) {
     if (isRefreshing) {
-      // Attendre que le refresh en cours se termine
       const newToken = await new Promise<string>((resolve) => {
         refreshQueue.push(resolve);
       });
       headers['Authorization'] = `Bearer ${newToken}`;
-      response = await fetch(url, { ...options, headers });
+      const retryCtrl = new AbortController();
+      const retryTimeout = setTimeout(() => retryCtrl.abort(), 30000);
+      response = await fetch(url, { ...options, headers, signal: retryCtrl.signal });
+      clearTimeout(retryTimeout);
     } else {
       isRefreshing = true;
       const newToken = await refreshTokens();
@@ -66,9 +73,11 @@ export async function apiRequest<T>(
       if (newToken) {
         drainQueue(newToken);
         headers['Authorization'] = `Bearer ${newToken}`;
-        response = await fetch(url, { ...options, headers });
+        const retryCtrl = new AbortController();
+        const retryTimeout = setTimeout(() => retryCtrl.abort(), 30000);
+        response = await fetch(url, { ...options, headers, signal: retryCtrl.signal });
+        clearTimeout(retryTimeout);
       } else {
-        // Refresh échoué → déconnecter
         StorageService.clearAuth();
         throw new Error('SESSION_EXPIRED');
       }

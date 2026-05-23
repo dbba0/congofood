@@ -3,7 +3,7 @@
   "compilerOptions": {
     "rootDir": "..",
     "paths": {
-      "@congofood/types": ["../packages/types/src"]
+      "@wapi/types": ["../packages/types/src"]
     }
   },
   "include": ["src/**/*", "../packages/types/src/**/*"],

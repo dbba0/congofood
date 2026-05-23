@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
 
-const BACKEND_URL = __DEV__ ? 'http://localhost:3000' : 'https://api.congofood.cd';
+const BACKEND_URL = __DEV__ ? 'http://localhost:3000' : 'https://api.wapi.cd';
 
 interface UseSocketOptions {
   token: string | null;

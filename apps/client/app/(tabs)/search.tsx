@@ -17,8 +17,8 @@ import { Colors, Typography, Spacing, BorderRadius } from '../../constants/theme
 import { apiRequest } from '../../lib/apiClient';
 import { API } from '../../constants/api';
 import { StorageService, STORAGE_KEYS } from '../../lib/storage';
-import { RestaurantCard, SkeletonRestaurantCard, EmptyState } from '@congofood/ui';
-import type { Restaurant } from '@congofood/types';
+import { RestaurantCard, SkeletonRestaurantCard, EmptyState } from '@wapi/ui';
+import type { Restaurant } from '@wapi/types';
 
 interface CategoryItem {
   id: string;
@@ -56,10 +56,19 @@ export default function SearchScreen() {
     return () => clearTimeout(id);
   }, [query]);
 
+  // Même pattern que useRestaurants : l'API retourne { restaurants, total, page, totalPages }
   const { data: results, isLoading } = useQuery<Restaurant[]>({
     queryKey: ['search', debouncedQuery],
-    queryFn: () =>
-      apiRequest<Restaurant[]>(`${API.restaurants}?search=${encodeURIComponent(debouncedQuery)}`),
+    queryFn: async () => {
+      const res = await apiRequest<{
+        restaurants: Restaurant[];
+        total: number;
+        page: number;
+        totalPages: number;
+      }>(`${API.restaurants}?search=${encodeURIComponent(debouncedQuery)}`);
+      console.log('[search] résultats:', res.restaurants?.length);
+      return res.restaurants;
+    },
     enabled: debouncedQuery.trim().length >= 2,
     staleTime: 60_000,
   });

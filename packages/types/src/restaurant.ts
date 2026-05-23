@@ -40,7 +40,7 @@ export interface Restaurant {
   /** Temps de préparation estimé en minutes */
   estimatedPrepTime: number;
   rating: RestaurantRating;
-  /** Validé par l'admin CongoFood */
+  /** Validé par l'admin Wapi */
   isVerified: boolean;
   createdAt: string;
   updatedAt?: string;

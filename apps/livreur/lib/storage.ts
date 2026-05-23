@@ -1,7 +1,7 @@
 // expo-secure-store est compatible Expo Go (contrairement à react-native-mmkv
 // qui nécessite un build natif). En production (EAS/prebuild), migrer vers MMKV.
 import * as SecureStore from 'expo-secure-store';
-import type { AuthUser, AuthTokens } from '@congofood/types';
+import type { AuthUser, AuthTokens } from '@wapi/types';
 
 const KEYS = {
   user: 'cf_livreur_user',

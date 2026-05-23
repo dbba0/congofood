@@ -18,7 +18,7 @@ import { useAuthStore } from '../store/authStore';
 import { StorageService, STORAGE_KEYS } from '../lib/storage';
 import { apiRequest } from '../lib/apiClient';
 import { API } from '../constants/api';
-import type { PaymentMethod } from '@congofood/types';
+import type { PaymentMethod } from '@wapi/types';
 
 interface PaymentOption {
   id: PaymentMethod;

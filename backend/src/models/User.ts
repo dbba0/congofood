@@ -1,5 +1,5 @@
 import { Schema, model, Document } from 'mongoose';
-import type { User, UserRole, UserAddress } from '@congofood/types';
+import type { User, UserRole, UserAddress } from '@wapi/types';
 
 /** Champs internes uniquement côté serveur, absents du type public User */
 export interface UserDocument extends Omit<User, '_id'>, Document {

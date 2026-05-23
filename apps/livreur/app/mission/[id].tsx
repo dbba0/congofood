@@ -27,7 +27,7 @@ import { useMissionStore } from '../../store/missionStore';
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const SHEET_HEIGHT = 310;
 const SNAP_COLLAPSED = SHEET_HEIGHT - 68;
-const BACKEND_URL = __DEV__ ? 'http://localhost:3000' : 'https://api.congofood.cd';
+const BACKEND_URL = __DEV__ ? 'http://localhost:3000' : 'https://api.wapi.cd';
 
 type Step = 'picking_up' | 'delivering' | 'completed';
 

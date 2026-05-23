@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Delivery, DeliveryStatus } from '@congofood/types';
+import type { Delivery, DeliveryStatus } from '@wapi/types';
 
 interface MissionState {
   activeMission: Delivery | null;

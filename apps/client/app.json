@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "CongoFood",
-    "slug": "congofood-client",
+    "name": "Wapi",
+    "slug": "wapi",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "scheme": "congofood",
+    "scheme": "wapi",
     "userInterfaceStyle": "dark",
     "splash": {
       "image": "./assets/splash.png",
@@ -17,14 +17,14 @@
     ],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "cd.congofood.client"
+      "bundleIdentifier": "cd.wapi.client"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0A0A0F"
       },
-      "package": "cd.congofood.client"
+      "package": "cd.wapi.client"
     },
     "plugins": [
       "expo-router",
@@ -38,7 +38,7 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "CongoFood a besoin de votre localisation pour trouver les restaurants proches."
+          "locationAlwaysAndWhenInUsePermission": "Wapi a besoin de votre localisation pour trouver les restaurants proches."
         }
       ],
       "expo-font"

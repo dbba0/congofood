@@ -1,5 +1,5 @@
 {
-  "name": "@congofood/api-client",
+  "name": "@wapi/api-client",
   "version": "0.1.0",
   "private": true,
   "main": "./src/index.ts",
@@ -17,7 +17,7 @@
     "react": "^18.2.0"
   },
   "dependencies": {
-    "@congofood/types": "*",
+    "@wapi/types": "*",
     "@tanstack/react-query": "^5.45.0",
     "axios": "^1.7.2"
   }

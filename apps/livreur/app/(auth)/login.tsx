@@ -13,7 +13,7 @@ import { router } from 'expo-router';
 import { Colors, Typography, Spacing, BorderRadius } from '../../constants/theme';
 import { useAuthStore } from '../../store/authStore';
 import { saveSession } from '../../lib/storage';
-import type { AuthUser, AuthTokens } from '@congofood/types';
+import type { AuthUser, AuthTokens } from '@wapi/types';
 
 export default function LivreurLoginScreen() {
   const [phone, setPhone] = useState('');
@@ -62,13 +62,13 @@ export default function LivreurLoginScreen() {
       <View style={styles.inner}>
         {/* Logo */}
         <View style={styles.logoArea}>
-          <Text style={styles.logoTitle}>CongoFood</Text>
+          <Text style={styles.logoTitle}>Wapi Pro</Text>
           <View style={styles.badgeRow}>
             <View style={styles.badge}>
               <Text style={styles.badgeText}>Espace Livreur</Text>
             </View>
           </View>
-          <Text style={styles.tagline}>Livrez plus vite, gagnez plus.</Text>
+          <Text style={styles.tagline}>Livrez avec Wapi</Text>
         </View>
 
         {/* Form */}

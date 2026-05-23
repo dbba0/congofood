@@ -7,7 +7,7 @@ export type PaymentMethod =
   | 'cash';
 
 export type PaymentStatusValue =
-  | 'initiated'  // Paiement initié côté CongoFood
+  | 'initiated'  // Paiement initié côté Wapi
   | 'pending'    // En attente de confirmation du provider
   | 'success'    // Confirmé
   | 'failed';    // Échec

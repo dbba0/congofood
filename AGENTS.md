@@ -1,14 +1,14 @@
-# AGENTS.md — CongoFood Monorepo
+# AGENTS.md — Wapi Monorepo
 
 > Fichier lu automatiquement par Codex au début de chaque session.
-> Ne pas scanner node_modules/. Ne pas redéfinir les types de @congofood/types.
+> Ne pas scanner node_modules/. Ne pas redéfinir les types de @wapi/types.
 > Mettre à jour la section **6. ÉTAT ACTUEL** manuellement après chaque ticket.
 
 ---
 
 ## 1. PROJET
 
-**Nom :** CongoFood  
+**Nom :** Wapi  
 **Description :** Application de livraison food & épicerie à Kinshasa (RDC) connectant clients, restaurants et livreurs via une plateforme mobile-first.  
 **Marché cible :** Kinshasa, République Démocratique du Congo — appareils Android bas de gamme, réseau 3G instable.  
 **Stack global :** React Native (Expo) · Node.js/Express · MongoDB Atlas · Socket.io · CinetPay · npm workspaces
@@ -18,7 +18,7 @@
 ## 2. STRUCTURE MONOREPO
 
 ```
-congofood/
+wapi/
 ├── apps/
 │   ├── client/               # App React Native — commande & suivi pour les clients
 │   │   ├── app/
@@ -174,7 +174,7 @@ Overlay             rgba(0, 0, 0, 0.75)
 - PR apps & architecture → reviewer Djibril Ba obligatoire
 
 ### Code
-- Types **toujours** importés depuis `@congofood/types` — ne jamais redéfinir
+- Types **toujours** importés depuis `@wapi/types` — ne jamais redéfinir
 - Appels API **uniquement** via hooks React Query (jamais `fetch`/`axios` bruts dans les composants)
 - Stockage local : **MMKV uniquement** — jamais `AsyncStorage` ni `expo-secure-store` pour les tokens
 - Zéro erreur TypeScript avant de merger (CI : `npx tsc --noEmit`)
@@ -280,7 +280,7 @@ curl http://localhost:8081/status
 
 1. **Lire ce fichier en premier** avant toute action sur le projet.
 2. **Ne jamais scanner `node_modules/`** — utiliser les paths du monorepo.
-3. **Types depuis `@congofood/types` uniquement** — ne jamais redéfinir `User`, `Order`, `AuthTokens`, etc.
+3. **Types depuis `@wapi/types` uniquement** — ne jamais redéfinir `User`, `Order`, `AuthTokens`, etc.
 4. **Zéro erreur TypeScript** avant de déclarer une tâche terminée (`npx tsc --noEmit`).
 5. **Commentaires en français** dans tout le code.
 6. **MMKV uniquement** pour le stockage local — jamais `AsyncStorage`.

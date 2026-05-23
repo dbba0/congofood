@@ -1,4 +1,4 @@
-// Carte de contenu CongoFood — cliquable optionnelle, accent couleur gauche
+// Carte de contenu Wapi — cliquable optionnelle, accent couleur gauche
 import React from 'react';
 import {
   TouchableOpacity,

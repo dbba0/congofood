@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env';
-import type { UserRole } from '@congofood/types';
+import type { UserRole } from '@wapi/types';
 
 /** Payload décodé du JWT */
 export interface JwtPayload {

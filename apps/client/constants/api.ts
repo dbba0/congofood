@@ -1,4 +1,4 @@
-// Points d'entrée de l'API CongoFood
+// Points d'entrée de l'API Wapi
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
 
 // Mode développement — désactive les appels OTP réels

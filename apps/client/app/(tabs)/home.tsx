@@ -18,8 +18,8 @@ import { useAuthStore } from '../../store/authStore';
 import { useCartStore } from '../../store/cartStore';
 import { useRestaurants } from '../../hooks/useRestaurants';
 import { StorageService, STORAGE_KEYS } from '../../lib/storage';
-import { RestaurantCard, SkeletonRestaurantCard, EmptyState } from '@congofood/ui';
-import type { Restaurant } from '@congofood/types';
+import { RestaurantCard, SkeletonRestaurantCard, EmptyState } from '@wapi/ui';
+import type { Restaurant } from '@wapi/types';
 
 interface Categorie {
   id: string;
@@ -49,7 +49,7 @@ export default function HomeScreen() {
     });
   }, []);
 
-  const { data: restaurants, isLoading } = useRestaurants(quartier);
+  const { data: restaurants, isLoading, error } = useRestaurants(quartier);
 
   const filtered = activeCategory
     ? restaurants?.filter((r) => r.category === activeCategory)

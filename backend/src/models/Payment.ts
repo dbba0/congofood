@@ -1,5 +1,5 @@
 import { Schema, model, Document } from 'mongoose';
-import type { Payment, PaymentMethod, PaymentStatusValue, Currency } from '@congofood/types';
+import type { Payment, PaymentMethod, PaymentStatusValue, Currency } from '@wapi/types';
 
 export interface PaymentDocument extends Omit<Payment, '_id' | 'order' | 'user'>, Document {
   order: Schema.Types.ObjectId;

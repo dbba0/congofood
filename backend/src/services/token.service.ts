@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import { env } from '../config/env';
-import type { UserRole } from '@congofood/types';
+import type { UserRole } from '@wapi/types';
 
 export interface AccessTokenPayload {
   userId: string;

@@ -14,7 +14,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Typography, Spacing, BorderRadius } from '../constants/theme';
 import { useCartStore } from '../store/cartStore';
-import { EmptyState } from '@congofood/ui';
+import { EmptyState } from '@wapi/ui';
 
 const LIVRAISON_FEE = 1500; // CDF
 

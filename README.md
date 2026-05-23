@@ -1,4 +1,4 @@
-# CongoFood — Monorepo
+# Wapi — Application de livraison
 
 Application de livraison food & épicerie à Kinshasa (RDC).
 
@@ -23,7 +23,7 @@ Application de livraison food & épicerie à Kinshasa (RDC).
 ## Structure du projet
 
 ```
-congofood/
+wapi/
 ├── apps/
 │   ├── client/       # App React Native — clients finaux
 │   ├── livreur/      # App React Native — livreurs
@@ -111,7 +111,7 @@ Tous les types TypeScript sont centralisés dans `packages/types`.
 Ils sont importés comme :
 
 ```typescript
-import type { Order, User, Restaurant } from '@congofood/types';
+import type { Order, User, Restaurant } from '@wapi/types';
 ```
 
 Les packages partagés sont référencés via les `paths` dans chaque `tsconfig.json` — pas besoin de build avant de démarrer en développement.

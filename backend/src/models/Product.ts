@@ -1,5 +1,5 @@
 import { Schema, model, Document } from 'mongoose';
-import type { Product, Currency, ProductOption } from '@congofood/types';
+import type { Product, Currency, ProductOption } from '@wapi/types';
 
 export interface ProductDocument extends Omit<Product, '_id' | 'restaurant'>, Document {
   restaurant: Schema.Types.ObjectId;

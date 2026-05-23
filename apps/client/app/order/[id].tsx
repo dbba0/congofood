@@ -16,8 +16,8 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { Colors, Typography, Spacing, BorderRadius } from '../../constants/theme';
 import { apiRequest } from '../../lib/apiClient';
 import { API } from '../../constants/api';
-import { OrderStatusBadge, Avatar } from '@congofood/ui';
-import type { Order, OrderStatus } from '@congofood/types';
+import { OrderStatusBadge, Avatar } from '@wapi/ui';
+import type { Order, OrderStatus } from '@wapi/types';
 
 interface OrderWithLivreur extends Order {
   livreurDetails?: {
@@ -66,7 +66,7 @@ export default function OrderTrackingScreen() {
   });
 
   const openWhatsApp = useCallback((phone: string, name: string) => {
-    const msg = `Bonjour ${name}, je vous contacte pour ma commande CongoFood #CF-${id?.slice(-6).toUpperCase()}`;
+    const msg = `Bonjour ${name}, je vous contacte pour ma commande Wapi #WP-${id?.slice(-6).toUpperCase()}`;
     Linking.openURL(`https://wa.me/${phone.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`);
   }, [id]);
 

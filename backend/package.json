@@ -1,5 +1,5 @@
 {
-  "name": "@congofood/backend",
+  "name": "@wapi/backend",
   "version": "0.1.0",
   "private": true,
   "main": "dist/index.js",
@@ -23,13 +23,13 @@
       "<rootDir>/src/test/setup.ts"
     ],
     "moduleNameMapper": {
-      "@congofood/types": "<rootDir>/../packages/types/src"
+      "@wapi/types": "<rootDir>/../packages/types/src"
     },
     "globals": {
       "ts-jest": {
         "tsconfig": {
           "paths": {
-            "@congofood/types": [
+            "@wapi/types": [
               "../packages/types/src"
             ]
           }
@@ -38,7 +38,7 @@
     }
   },
   "dependencies": {
-    "@congofood/types": "file:../packages/types",
+    "@wapi/types": "file:../packages/types",
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",

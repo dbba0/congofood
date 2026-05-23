@@ -14,7 +14,7 @@ import { useAuthStore } from '../../store/authStore';
 import { StorageService } from '../../lib/storage';
 import { apiRequest } from '../../lib/apiClient';
 import { API } from '../../constants/api';
-import { Avatar, WhatsAppButton } from '@congofood/ui';
+import { Avatar, WhatsAppButton } from '@wapi/ui';
 
 interface MenuItem {
   icon: string;
@@ -129,7 +129,7 @@ export default function ProfileScreen() {
         <View style={styles.whatsappWrap}>
           <WhatsAppButton
             phone="+243000000000"
-            message="Bonjour, j'ai besoin d'aide avec CongoFood"
+            message="Bonjour, j'ai besoin d'aide avec Wapi"
             label="💬 Contacter le support WhatsApp"
           />
         </View>
@@ -140,7 +140,7 @@ export default function ProfileScreen() {
           <Text style={styles.logoutText}>Déconnexion</Text>
         </TouchableOpacity>
 
-        <Text style={styles.version}>CongoFood v0.1.0 · Kinshasa 🇨🇩</Text>
+        <Text style={styles.version}>Wapi v0.1.0 · Kinshasa 🇨🇩</Text>
       </ScrollView>
     </SafeAreaView>
   );

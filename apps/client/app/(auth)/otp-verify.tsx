@@ -20,7 +20,7 @@ import { Colors, Typography, Spacing, BorderRadius } from '../../constants/theme
 import { API, DEV_MODE } from '../../constants/api';
 import { StorageService, STORAGE_KEYS } from '../../lib/storage';
 import { useAuthStore } from '../../store/authStore';
-import type { AuthUser, AuthTokens } from '@congofood/types';
+import type { AuthUser, AuthTokens } from '@wapi/types';
 
 const OTP_LENGTH = 6;
 const TIMER_SECONDS = 45;

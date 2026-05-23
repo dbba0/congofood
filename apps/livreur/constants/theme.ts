@@ -1,5 +1,5 @@
 // Même charte graphique que l'app client — dupliqué car apps indépendantes
-// En phase 2, déplacer vers @congofood/ui/theme
+// En phase 2, déplacer vers @wapi/ui/theme
 
 export const Colors = {
   background: '#0A0A0F',

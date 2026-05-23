@@ -1,5 +1,5 @@
 import { Schema, model, Document } from 'mongoose';
-import type { Delivery, DeliveryStatus } from '@congofood/types';
+import type { Delivery, DeliveryStatus } from '@wapi/types';
 
 export interface DeliveryDocument extends Omit<Delivery, '_id' | 'order' | 'livreur'>, Document {
   order: Schema.Types.ObjectId;

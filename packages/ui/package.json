@@ -1,5 +1,5 @@
 {
-  "name": "@congofood/ui",
+  "name": "@wapi/ui",
   "version": "0.1.0",
   "private": true,
   "main": "./src/index.ts",
@@ -16,6 +16,6 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "@congofood/types": "*"
+    "@wapi/types": "*"
   }
 }

@@ -18,7 +18,7 @@ import {
 import { useAuthStore } from '../store/authStore';
 import { StorageService, STORAGE_KEYS } from '../lib/storage';
 import { Colors } from '../constants/theme';
-import type { AuthUser, AuthTokens } from '@congofood/types';
+import type { AuthUser, AuthTokens } from '@wapi/types';
 
 SplashScreen.preventAutoHideAsync();
 

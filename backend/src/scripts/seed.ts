@@ -1,5 +1,5 @@
 /**
- * Seed MongoDB — données réalistes pour le MVP CongoFood à Kinshasa
+ * Seed MongoDB — données réalistes pour le MVP Wapi à Kinshasa
  *
  * Usage : cd backend && npm run seed
  * Vide les collections Restaurant + Product avant insertion.
@@ -189,7 +189,7 @@ const RESTAURANTS: SeedRestaurant[] = [
 // ─── Script principal ────────────────────────────────────────────────
 
 async function seed() {
-  console.log('🌱 Démarrage du seed CongoFood...\n');
+  console.log('🌱 Démarrage du seed Wapi...\n');
 
   await mongoose.connect(env.MONGODB_URI);
   console.log('✅ MongoDB connecté');

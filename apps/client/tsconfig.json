@@ -4,13 +4,13 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@congofood/types": [
+      "@wapi/types": [
         "../../packages/types/src"
       ],
-      "@congofood/ui": [
+      "@wapi/ui": [
         "../../packages/ui/src"
       ],
-      "@congofood/api-client": [
+      "@wapi/api-client": [
         "../../packages/api-client/src"
       ],
       "@/*": [

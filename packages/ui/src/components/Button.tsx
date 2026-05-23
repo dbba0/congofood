@@ -1,4 +1,4 @@
-// Bouton réutilisable CongoFood — 4 variantes, 3 tailles, état loading/disabled
+// Bouton réutilisable Wapi — 4 variantes, 3 tailles, état loading/disabled
 import React from 'react';
 import {
   ActivityIndicator,

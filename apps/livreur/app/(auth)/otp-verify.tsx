@@ -13,7 +13,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Colors, Typography, Spacing, BorderRadius } from '../../constants/theme';
 import { useAuthStore } from '../../store/authStore';
 import { saveSession } from '../../lib/storage';
-import type { AuthUser, AuthTokens } from '@congofood/types';
+import type { AuthUser, AuthTokens } from '@wapi/types';
 
 const OTP_LENGTH = 6;
 
@@ -61,7 +61,7 @@ export default function OtpVerifyScreen() {
     const mockUser: AuthUser = {
       _id: `livreur_${phone?.replace(/\D/g, '') ?? 'unknown'}`,
       phone: phone ?? '',
-      name: 'Livreur CongoFood',
+      name: 'Livreur Wapi',
       role: 'livreur',
       isVerified: true,
       createdAt: new Date().toISOString(),

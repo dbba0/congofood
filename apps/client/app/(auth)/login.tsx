@@ -68,7 +68,7 @@ export default function LoginScreen() {
 
         {/* Titre */}
         <Animated.View entering={FadeInDown.delay(100).duration(500)}>
-          <Text style={styles.title}>Bienvenue sur{'\n'}CongoFood</Text>
+          <Text style={styles.title}>Bienvenue sur{'\n'}Wapi</Text>
           <Text style={styles.subtitle}>
             Commandez vos plats préférés,{'\n'}livrés chez vous à Kinshasa
           </Text>

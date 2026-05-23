@@ -14,14 +14,17 @@ import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Typography, Spacing, BorderRadius } from '../../constants/theme';
 import { useRestaurant } from '../../hooks/useRestaurants';
+import type { MenuByCategory } from '../../hooks/useRestaurants';
 import { useCartStore } from '../../store/cartStore';
-import { ProductCard, Badge } from '@congofood/ui';
-import type { Product } from '@congofood/types';
+import { ProductCard, Badge } from '@wapi/ui';
+import type { Product } from '@wapi/types';
 
 export default function RestaurantScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { data: restaurant, isLoading } = useRestaurant(id);
+  const { data, isLoading } = useRestaurant(id);
+  const restaurant = data?.restaurant;
+  const menu: MenuByCategory = data?.menu ?? {};
   const { addItem, updateQty, items } = useCartStore();
   const cartCount = useCartStore((s) => s.itemCount());
 
@@ -31,25 +34,15 @@ export default function RestaurantScreen() {
   const getQtyInCart = (productId: string) =>
     items.find((i) => i.product._id === productId)?.qty ?? 0;
 
-  // Grouper les produits par catégorie
-  const productsByCategory = (() => {
-    if (!restaurant) return [];
-    // On suppose que le restaurant contient les produits (populated depuis l'API)
-    const products = (restaurant as unknown as { products?: Product[] }).products ?? [];
-    const categories = [...new Set(products.map((p) => p.category))];
-    return categories
-      .filter((cat) => !activeCategory || cat === activeCategory)
-      .map((cat) => ({
-        title: cat,
-        data: products.filter((p) => p.category === cat),
-      }));
-  })();
+  // Le menu est déjà groupé par catégorie depuis l'API
+  const allCategories = Object.keys(menu);
 
-  const allCategories = (() => {
-    if (!restaurant) return [];
-    const products = (restaurant as unknown as { products?: Product[] }).products ?? [];
-    return [...new Set(products.map((p) => p.category))];
-  })();
+  const productsByCategory = allCategories
+    .filter((cat) => !activeCategory || cat === activeCategory)
+    .map((cat) => ({
+      title: cat,
+      data: menu[cat] ?? [],
+    }));
 
   if (isLoading || !restaurant) {
     return (

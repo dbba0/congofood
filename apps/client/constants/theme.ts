@@ -8,7 +8,7 @@ export const Colors = {
   // Séparateurs et bordures
   border: '#2A2A35',
 
-  // Couleurs primaires CongoFood
+  // Couleurs primaires Wapi
   orange: '#E85D04',
   orangeLight: '#FF6B00',
   orangeDark: '#C44E00',

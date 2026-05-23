@@ -1,4 +1,4 @@
-// Champ de saisie CongoFood — label, error, hint, focus coloré
+// Champ de saisie Wapi — label, error, hint, focus coloré
 import React, { useState } from 'react';
 import {
   Text,

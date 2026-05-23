@@ -3,7 +3,7 @@ import type { FilterQuery } from 'mongoose';
 import { authenticate, requireRole } from '../middleware/auth';
 import { RestaurantModel, type RestaurantDocument } from '../models/Restaurant';
 import { ProductModel } from '../models/Product';
-import type { RestaurantCategory } from '@congofood/types';
+import type { RestaurantCategory } from '@wapi/types';
 
 const router = Router();
 

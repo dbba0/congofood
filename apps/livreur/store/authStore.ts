@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { AuthUser, AuthTokens } from '@congofood/types';
+import type { AuthUser, AuthTokens } from '@wapi/types';
 
 interface AuthState {
   user: AuthUser | null;

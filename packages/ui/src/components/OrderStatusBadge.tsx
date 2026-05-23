@@ -1,5 +1,5 @@
 import React from 'react';
-import type { OrderStatus } from '@congofood/types';
+import type { OrderStatus } from '@wapi/types';
 import { Badge } from './Badge';
 import type { BadgeProps } from './Badge';
 

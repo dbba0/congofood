@@ -46,7 +46,7 @@ class OTPService {
 
     await at.SMS.send({
       to: [phone],
-      message: `Votre code CongoFood : ${code}\nValable 5 minutes.`,
+      message: `Votre code Wapi : ${code}\nValable 5 minutes.`,
     });
 
     return {};

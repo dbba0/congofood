@@ -1,5 +1,5 @@
 import { Schema, model, Document } from 'mongoose';
-import type { Restaurant, RestaurantCategory, OpeningHour } from '@congofood/types';
+import type { Restaurant, RestaurantCategory, OpeningHour } from '@wapi/types';
 
 export interface RestaurantDocument extends Omit<Restaurant, '_id' | 'owner'>, Document {
   owner: Schema.Types.ObjectId;

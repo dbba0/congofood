@@ -1,4 +1,4 @@
-// Badge statut/catégorie CongoFood — 7 variantes colorées
+// Badge statut/catégorie Wapi — 7 variantes colorées
 import React from 'react';
 import { Text, View } from 'react-native';
 

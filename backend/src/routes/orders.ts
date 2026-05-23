@@ -7,7 +7,7 @@ import { ProductModel } from '../models/Product';
 import { PaymentModel } from '../models/Payment';
 import { DeliveryModel } from '../models/Delivery';
 import { getIO } from '../config/socket';
-import type { OrderStatus, PaymentMethod } from '@congofood/types';
+import type { OrderStatus, PaymentMethod } from '@wapi/types';
 
 const router = Router();
 router.use(authenticate);

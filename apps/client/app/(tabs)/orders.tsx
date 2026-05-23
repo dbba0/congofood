@@ -15,8 +15,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors, Typography, Spacing, BorderRadius } from '../../constants/theme';
 import { apiRequest } from '../../lib/apiClient';
 import { API } from '../../constants/api';
-import { OrderStatusBadge, EmptyState } from '@congofood/ui';
-import type { Order, OrderStatus } from '@congofood/types';
+import { OrderStatusBadge, EmptyState } from '@wapi/ui';
+import type { Order, OrderStatus } from '@wapi/types';
 
 const ACTIVE_STATUSES: OrderStatus[] = [
   'pending', 'confirmed', 'preparing', 'ready', 'picking_up', 'on_the_way',

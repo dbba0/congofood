@@ -1,5 +1,5 @@
 {
-  "name": "@congofood/livreur",
+  "name": "@wapi/livreur",
   "version": "0.1.0",
   "private": true,
   "main": "expo-router/entry",
@@ -10,9 +10,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@congofood/api-client": "*",
-    "@congofood/types": "*",
-    "@congofood/ui": "*",
+    "@wapi/api-client": "*",
+    "@wapi/types": "*",
+    "@wapi/ui": "*",
     "@expo/vector-icons": "^15.0.2",
     "@tanstack/react-query": "^5.45.0",
     "axios": "^1.7.2",

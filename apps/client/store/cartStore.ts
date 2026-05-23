@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Product, OrderItemSelectedOption, Currency } from '@congofood/types';
+import type { Product, OrderItemSelectedOption, Currency } from '@wapi/types';
 
 export interface CartItem {
   product: Product;
