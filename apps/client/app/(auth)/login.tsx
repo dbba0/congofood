@@ -31,20 +31,32 @@ export default function LoginScreen() {
     if (!canSubmit) return;
     setLoading(true);
     setError('');
+    // Timeout 15s — Render dort souvent (cold start)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
     try {
-      // TODO : appeler POST /api/auth/otp/send en production
-      if (!DEV_MODE) {
-        const res = await fetch(API.sendOtp, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: fullPhone }),
-        });
-        const data = await res.json();
-        if (!res.ok || !data.success) throw new Error(data.message || 'Erreur réseau');
+      const res = await fetch(API.sendOtp, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: fullPhone }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      const data = await res.json();
+      console.log('[Login] send-otp réponse:', JSON.stringify(data).slice(0, 150));
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Erreur réseau');
       }
+      // OTP créé côté backend → naviguer vers la vérification
       router.push({ pathname: '/(auth)/otp-verify', params: { phone: fullPhone } });
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Impossible d'envoyer le code");
+      clearTimeout(timeoutId);
+      if (e instanceof Error && e.name === 'AbortError') {
+        setError('Serveur en démarrage... Réessaie dans 30 secondes');
+      } else {
+        setError(e instanceof Error ? e.message : "Impossible d'envoyer le code");
+      }
     } finally {
       setLoading(false);
     }

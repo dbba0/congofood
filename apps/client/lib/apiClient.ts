@@ -41,6 +41,10 @@ export async function apiRequest<T>(
 ): Promise<T> {
   const accessToken = await StorageService.get(STORAGE_KEYS.ACCESS_TOKEN);
 
+  // Debug — supprimer après vérification
+  console.log('[API] Token utilisé:', accessToken?.slice(0, 20));
+  console.log('[API] Request URL:', url);
+
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(options.headers as Record<string, string>),
@@ -53,6 +57,9 @@ export async function apiRequest<T>(
 
   let response = await fetch(url, { ...options, headers, signal: controller.signal });
   clearTimeout(timeoutId);
+
+  // Debug — supprimer après vérification
+  console.log('[API] Response status:', response.status);
 
   // Si 401 → tenter un refresh puis rejouer la requête
   if (response.status === 401) {

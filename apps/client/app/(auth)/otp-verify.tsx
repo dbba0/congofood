@@ -70,37 +70,29 @@ export default function OtpVerifyScreen() {
       let tokens: AuthTokens;
       let isNewUser: boolean;
 
-      if (DEV_MODE) {
-        // TODO : appeler POST /api/auth/otp/verify en production
-        if (code !== DEV_CODE) throw new Error(`Code dev: ${DEV_CODE}`);
-        user = {
-          _id: 'dev-user-001',
-          phone: phone ?? '+243800000000',
-          name: 'Utilisateur Dev',
-          role: 'client',
-          isVerified: true,
-          createdAt: new Date().toISOString(),
-        };
-        tokens = {
-          accessToken: 'dev-access-token',
-          refreshToken: 'dev-refresh-token',
-          expiresIn: 900,
-        };
-        isNewUser = false;
-      } else {
-        const res = await fetch(API.verifyOtp, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone, code }),
-        });
-        const data = await res.json();
-        if (!res.ok || !data.success) throw new Error(data.message || 'Code incorrect');
-        ({ user, tokens, isNewUser } = data.data as {
-          user: AuthUser;
-          tokens: AuthTokens;
-          isNewUser: boolean;
-        });
+      // Toujours appeler le vrai backend — même en dev
+      // Le backend accepte "000000" comme code valide en dev
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+      const res = await fetch(API.verifyOtp, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, code }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      const data = await res.json();
+      console.log('[OTP] réponse backend:', JSON.stringify(data).slice(0, 200));
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Code incorrect');
       }
+      ({ user, tokens, isNewUser } = data.data as {
+        user: AuthUser;
+        tokens: AuthTokens;
+        isNewUser: boolean;
+      });
 
       await StorageService.set(STORAGE_KEYS.ACCESS_TOKEN, tokens.accessToken);
       await StorageService.set(STORAGE_KEYS.REFRESH_TOKEN, tokens.refreshToken);
@@ -114,7 +106,9 @@ export default function OtpVerifyScreen() {
         router.replace('/(tabs)/home');
       }
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : 'Code incorrect';
+      const msg = e instanceof Error && e.name === 'AbortError'
+        ? 'Serveur en démarrage... Réessaie dans 30 secondes'
+        : e instanceof Error ? e.message : 'Code incorrect';
       setError(msg);
       triggerShake();
       setDigits(Array(OTP_LENGTH).fill(''));
