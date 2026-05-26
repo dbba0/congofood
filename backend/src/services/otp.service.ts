@@ -1,23 +1,24 @@
 import crypto from 'crypto';
-import { redis } from '../config/redis';
+import { redis, redisAvailable } from '../config/redis';
 import { env } from '../config/env';
 
 const OTP_TTL_SECONDS = 300;
-const OTP_TTL_MS = OTP_TTL_SECONDS * 1000;
 const MAX_ATTEMPTS = 3;
+// Timeout max pour une commande Redis — au-delà, fallback mémoire
+const REDIS_CMD_TIMEOUT_MS = 2000;
 
 interface OTPData {
   code: string;
   attempts: number;
 }
 
-// Fallback mémoire si Redis est indisponible (dev / staging)
+// Fallback mémoire — toujours disponible, même en production
 interface MemoryOTPData extends OTPData {
   expiresAt: number;
 }
 const memoryStore = new Map<string, MemoryOTPData>();
 
-// Nettoyage périodique des entrées expirées (évite les fuites mémoire)
+// Nettoyage périodique des entrées expirées
 setInterval(() => {
   const now = Date.now();
   for (const [key, value] of memoryStore) {
@@ -33,26 +34,49 @@ type ATInstance = {
 };
 type ATFactory = (opts: { apiKey: string; username: string }) => ATInstance;
 
-// --- Helpers de stockage avec fallback mémoire ---
+// --- Helpers : Redis avec timeout + fallback mémoire instantané ---
+
+/** Exécute une commande Redis avec un timeout strict de 2s */
+function withTimeout<T>(promise: Promise<T>, ms = REDIS_CMD_TIMEOUT_MS): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('Redis timeout')), ms);
+    promise.then(
+      (val) => { clearTimeout(timer); resolve(val); },
+      (err) => { clearTimeout(timer); reject(err); },
+    );
+  });
+}
 
 async function storeSet(key: string, data: OTPData, ttlSeconds: number): Promise<void> {
+  // Si Redis est déjà déconnecté, aller directement en mémoire
+  if (!redisAvailable) {
+    console.warn('[OTP] Redis indisponible, écriture mémoire directe');
+    memoryStore.set(key, { ...data, expiresAt: Date.now() + ttlSeconds * 1000 });
+    return;
+  }
   try {
-    await redis.setex(key, ttlSeconds, JSON.stringify(data));
+    await withTimeout(redis.setex(key, ttlSeconds, JSON.stringify(data)));
   } catch (e) {
-    if (env.NODE_ENV === 'production') throw e;
-    console.warn('[OTP] Redis indisponible, fallback mémoire pour SET:', (e as Error).message);
+    console.warn('[OTP] Redis SET échoué, fallback mémoire :', (e as Error).message);
     memoryStore.set(key, { ...data, expiresAt: Date.now() + ttlSeconds * 1000 });
   }
 }
 
 async function storeGet(key: string): Promise<OTPData | null> {
+  if (!redisAvailable) {
+    const entry = memoryStore.get(key);
+    if (!entry || entry.expiresAt <= Date.now()) {
+      memoryStore.delete(key);
+      return null;
+    }
+    return { code: entry.code, attempts: entry.attempts };
+  }
   try {
-    const raw = await redis.get(key);
+    const raw = await withTimeout(redis.get(key));
     if (!raw) return null;
     return JSON.parse(raw) as OTPData;
   } catch (e) {
-    if (env.NODE_ENV === 'production') throw e;
-    console.warn('[OTP] Redis indisponible, fallback mémoire pour GET:', (e as Error).message);
+    console.warn('[OTP] Redis GET échoué, fallback mémoire :', (e as Error).message);
     const entry = memoryStore.get(key);
     if (!entry || entry.expiresAt <= Date.now()) {
       memoryStore.delete(key);
@@ -63,13 +87,17 @@ async function storeGet(key: string): Promise<OTPData | null> {
 }
 
 async function storeDel(key: string): Promise<void> {
-  try {
-    await redis.del(key);
-  } catch (e) {
-    if (env.NODE_ENV === 'production') throw e;
-    console.warn('[OTP] Redis indisponible, fallback mémoire pour DEL:', (e as Error).message);
+  if (!redisAvailable) {
     memoryStore.delete(key);
+    return;
   }
+  try {
+    await withTimeout(redis.del(key));
+  } catch (e) {
+    console.warn('[OTP] Redis DEL échoué, fallback mémoire :', (e as Error).message);
+  }
+  // Toujours nettoyer la mémoire aussi (double source)
+  memoryStore.delete(key);
 }
 
 // --- Service OTP ---
