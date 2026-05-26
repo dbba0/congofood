@@ -17,8 +17,8 @@ const DELIVERY_FEE = 1500; // CDF fixe MVP
 function ok(res: Response, data: Record<string, unknown>, status = 200) {
   res.status(status).json({ success: true, data });
 }
-function fail(res: Response, error: string, status = 400) {
-  res.status(status).json({ success: false, error });
+function fail(res: Response, message: string, status = 400) {
+  res.status(status).json({ success: false, message });
 }
 
 // ── Matrice des transitions de statut autorisées ──────────────────────────

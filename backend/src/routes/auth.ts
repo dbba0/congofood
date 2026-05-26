@@ -6,14 +6,15 @@ import { authenticate } from '../middleware/auth';
 
 const router = Router();
 
-const PHONE_REGEX = /^\+243[0-9]{9}$/;
+// Format international : + suivi de 7 à 15 chiffres (E.164)
+const PHONE_REGEX = /^\+[1-9]\d{6,14}$/;
 
 function ok(res: Response, data: Record<string, unknown>, status = 200) {
-  res.status(status).json({ success: true, ...data });
+  res.status(status).json({ success: true, data });
 }
 
 function fail(res: Response, message: string, status = 400) {
-  res.status(status).json({ success: false, error: message });
+  res.status(status).json({ success: false, message });
 }
 
 // ── POST /api/auth/send-otp ───────────────────────────────────────────────
@@ -21,7 +22,7 @@ router.post('/send-otp', async (req: Request, res: Response): Promise<void> => {
   const { phone } = req.body as { phone?: string };
 
   if (!phone || !PHONE_REGEX.test(phone)) {
-    fail(res, 'Numéro invalide — format attendu : +243XXXXXXXXX');
+    fail(res, 'Numéro invalide — format international attendu : +XXXXXXXXXXX');
     return;
   }
 
@@ -42,7 +43,7 @@ router.post('/verify-otp', async (req: Request, res: Response): Promise<void> =>
   const { phone, code } = req.body as { phone?: string; code?: string };
 
   if (!phone || !PHONE_REGEX.test(phone)) {
-    fail(res, 'Numéro invalide — format attendu : +243XXXXXXXXX');
+    fail(res, 'Numéro invalide — format international attendu : +XXXXXXXXXXX');
     return;
   }
 
@@ -93,15 +94,18 @@ router.post('/verify-otp', async (req: Request, res: Response): Promise<void> =>
     await user.save();
 
     ok(res, {
-      accessToken,
-      refreshToken,
-      expiresIn: 900, // 15 minutes en secondes
+      tokens: {
+        accessToken,
+        refreshToken,
+        expiresIn: 900, // 15 minutes en secondes
+      },
       user: {
         _id: user._id,
         phone: user.phone,
         name: user.name,
         role: user.role,
         isVerified: user.isVerified,
+        createdAt: user.createdAt,
       },
       isNewUser,
     });
@@ -142,7 +146,7 @@ router.post('/refresh', async (req: Request, res: Response): Promise<void> => {
       phone: user.phone,
     });
 
-    ok(res, { accessToken, expiresIn: 900 });
+    ok(res, { tokens: { accessToken, expiresIn: 900 } });
   } catch {
     fail(res, 'Token invalide ou expiré', 401);
   }
