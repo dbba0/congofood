@@ -1,4 +1,4 @@
-// Écran de connexion — saisie numéro congolais + envoi OTP
+// Écran de connexion — saisie numéro multi-pays + envoi OTP
 import { useState, useRef } from 'react';
 import {
   View,
@@ -9,29 +9,54 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Modal,
+  FlatList,
+  Pressable,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import Animated, { FadeInDown } from 'react-native-reanimated';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors, Typography, Spacing, BorderRadius } from '../../constants/theme';
 import { API, DEV_MODE } from '../../constants/api';
+
+// --- Données pays ---
+interface Country {
+  code: string;       // ISO 2
+  flag: string;
+  name: string;
+  dialCode: string;   // avec +
+  digits: number;     // longueur attendue du numéro local
+  placeholder: string;
+}
+
+const COUNTRIES: Country[] = [
+  { code: 'CD', flag: '🇨🇩', name: 'Congo (RDC)',        dialCode: '+243', digits: 9,  placeholder: '8X XXX XXXX' },
+  { code: 'CG', flag: '🇨🇬', name: 'Congo (Brazzaville)',dialCode: '+242', digits: 9,  placeholder: '0X XXX XXXX' },
+  { code: 'CA', flag: '🇨🇦', name: 'Canada',             dialCode: '+1',   digits: 10, placeholder: '438 555 1234' },
+  { code: 'SN', flag: '🇸🇳', name: 'Sénégal',            dialCode: '+221', digits: 9,  placeholder: '7X XXX XXXX' },
+  { code: 'CI', flag: '🇨🇮', name: 'Côte d\'Ivoire',     dialCode: '+225', digits: 10, placeholder: '07 XX XX XXXX' },
+  { code: 'CM', flag: '🇨🇲', name: 'Cameroun',           dialCode: '+237', digits: 9,  placeholder: '6X XXX XXXX' },
+];
 
 export default function LoginScreen() {
   const router = useRouter();
   const inputRef = useRef<TextInput>(null);
 
+  const [country, setCountry] = useState<Country>(COUNTRIES[0]);
+  const [showPicker, setShowPicker] = useState(false);
   const [phone, setPhone] = useState('');
   const [focused, setFocused] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const fullPhone = `+243${phone}`;
-  const canSubmit = phone.replace(/\s/g, '').length >= 9 && !loading;
+  const cleanPhone = phone.replace(/\D/g, '');
+  const fullPhone = `${country.dialCode}${cleanPhone}`;
+  const canSubmit = cleanPhone.length >= country.digits && !loading;
 
   const handleSendOtp = async () => {
     if (!canSubmit) return;
     setLoading(true);
     setError('');
-    // Timeout 15s — Render dort souvent (cold start)
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000);
 
@@ -48,7 +73,6 @@ export default function LoginScreen() {
       if (!res.ok || !data.success) {
         throw new Error(data.message || 'Erreur réseau');
       }
-      // OTP créé côté backend → naviguer vers la vérification
       router.push({ pathname: '/(auth)/otp-verify', params: { phone: fullPhone } });
     } catch (e: unknown) {
       clearTimeout(timeoutId);
@@ -60,6 +84,14 @@ export default function LoginScreen() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const selectCountry = (c: Country) => {
+    setCountry(c);
+    setShowPicker(false);
+    setPhone('');
+    setError('');
+    setTimeout(() => inputRef.current?.focus(), 150);
   };
 
   return (
@@ -95,14 +127,27 @@ export default function LoginScreen() {
         {/* Champ téléphone */}
         <Animated.View entering={FadeInDown.delay(200).duration(500)} style={styles.fieldWrap}>
           <Text style={styles.label}>NUMÉRO DE TÉLÉPHONE</Text>
-          <TouchableOpacity
-            activeOpacity={1}
-            style={[styles.inputRow, focused && styles.inputRowFocused, error ? styles.inputRowError : undefined]}
-            onPress={() => inputRef.current?.focus()}
+          <View
+            style={[
+              styles.inputRow,
+              focused && styles.inputRowFocused,
+              error ? styles.inputRowError : undefined,
+            ]}
           >
-            <Text style={styles.flag}>🇨🇩</Text>
-            <Text style={styles.prefix}>+243</Text>
+            {/* Sélecteur pays */}
+            <TouchableOpacity
+              style={styles.countryBtn}
+              onPress={() => setShowPicker(true)}
+              activeOpacity={0.7}
+              hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+            >
+              <Text style={styles.flag}>{country.flag}</Text>
+              <Text style={styles.prefix}>{country.dialCode}</Text>
+              <Ionicons name="chevron-down" size={14} color={Colors.textMuted} />
+            </TouchableOpacity>
+
             <View style={styles.divider} />
+
             <TextInput
               ref={inputRef}
               style={styles.input}
@@ -111,14 +156,14 @@ export default function LoginScreen() {
                 setError('');
                 setPhone(t.replace(/[^0-9\s]/g, ''));
               }}
-              placeholder="8X XXX XXXX"
+              placeholder={country.placeholder}
               placeholderTextColor={Colors.textMuted}
               keyboardType="phone-pad"
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
-              maxLength={12}
+              maxLength={country.digits + 3}
             />
-          </TouchableOpacity>
+          </View>
           {!!error && <Text style={styles.errorText}>{error}</Text>}
         </Animated.View>
 
@@ -146,6 +191,45 @@ export default function LoginScreen() {
           </Text>
         </Animated.View>
       </ScrollView>
+
+      {/* Modal sélection pays */}
+      <Modal
+        visible={showPicker}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowPicker(false)}
+      >
+        <Pressable style={styles.modalOverlay} onPress={() => setShowPicker(false)}>
+          <Pressable style={styles.modalSheet}>
+            <View style={styles.modalHandle} />
+            <Text style={styles.modalTitle}>Choisir un pays</Text>
+            <FlatList
+              data={COUNTRIES}
+              keyExtractor={(c) => c.code}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item }) => {
+                const isActive = item.code === country.code;
+                return (
+                  <TouchableOpacity
+                    style={[styles.countryRow, isActive && styles.countryRowActive]}
+                    onPress={() => selectCountry(item)}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={styles.countryFlag}>{item.flag}</Text>
+                    <View style={styles.countryInfo}>
+                      <Text style={styles.countryName}>{item.name}</Text>
+                      <Text style={styles.countryDial}>{item.dialCode}</Text>
+                    </View>
+                    {isActive && (
+                      <Ionicons name="checkmark-circle" size={20} color={Colors.orange} />
+                    )}
+                  </TouchableOpacity>
+                );
+              }}
+            />
+          </Pressable>
+        </Pressable>
+      </Modal>
     </KeyboardAvoidingView>
   );
 }
@@ -233,15 +317,19 @@ const styles = {
   inputRowError: {
     borderColor: Colors.error,
   },
+  countryBtn: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 4,
+    paddingRight: Spacing.sm,
+  },
   flag: {
     fontSize: 20,
-    marginRight: Spacing.xs,
   },
   prefix: {
     fontFamily: 'DMSans_500Medium',
     fontSize: Typography.fontSize.base,
     color: Colors.textPrimary,
-    marginRight: Spacing.sm,
   },
   divider: {
     width: 1,
@@ -289,5 +377,61 @@ const styles = {
   hintLink: {
     color: Colors.orange,
     fontFamily: 'DMSans_500Medium',
+  },
+  // --- Modal pays ---
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: Colors.overlay,
+    justifyContent: 'flex-end' as const,
+  },
+  modalSheet: {
+    backgroundColor: Colors.surface,
+    borderTopLeftRadius: BorderRadius.xl,
+    borderTopRightRadius: BorderRadius.xl,
+    paddingBottom: 40,
+    maxHeight: '60%' as const,
+  },
+  modalHandle: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: Colors.border,
+    alignSelf: 'center' as const,
+    marginTop: Spacing.sm,
+    marginBottom: Spacing.base,
+  },
+  modalTitle: {
+    fontFamily: 'Syne_700Bold',
+    fontSize: Typography.fontSize.md,
+    color: Colors.textPrimary,
+    paddingHorizontal: Spacing.xl,
+    marginBottom: Spacing.base,
+  },
+  countryRow: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.xl,
+    gap: Spacing.md,
+  },
+  countryRowActive: {
+    backgroundColor: Colors.surfaceElevated,
+  },
+  countryFlag: {
+    fontSize: 28,
+  },
+  countryInfo: {
+    flex: 1,
+  },
+  countryName: {
+    fontFamily: 'DMSans_500Medium',
+    fontSize: Typography.fontSize.base,
+    color: Colors.textPrimary,
+  },
+  countryDial: {
+    fontFamily: 'DMSans_400Regular',
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textSecondary,
+    marginTop: 2,
   },
 };
