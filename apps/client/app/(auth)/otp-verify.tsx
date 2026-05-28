@@ -40,6 +40,44 @@ export default function OtpVerifyScreen() {
 
   const inputRefs = useRef<Array<TextInput | null>>(Array(OTP_LENGTH).fill(null));
   const shakeX = useSharedValue(0);
+  const devBypassDone = useRef(false);
+
+  // Mode dev : auto-remplir et auto-soumettre immédiatement
+  useEffect(() => {
+    if (!DEV_MODE || devBypassDone.current) return;
+    devBypassDone.current = true;
+
+    const devLogin = async () => {
+      setLoading(true);
+      setDigits(DEV_CODE.split(''));
+
+      const now = Date.now();
+      const mockUser: AuthUser = {
+        _id: 'dev-user-001',
+        phone: phone ?? '+243800000000',
+        name: 'Utilisateur Dev',
+        role: 'client',
+        isVerified: true,
+        createdAt: new Date().toISOString(),
+      };
+      const mockTokens: AuthTokens = {
+        accessToken: `dev-token-${now}`,
+        refreshToken: `dev-refresh-${now}`,
+        expiresIn: 86400,
+      };
+
+      await StorageService.set(STORAGE_KEYS.ACCESS_TOKEN, mockTokens.accessToken);
+      await StorageService.set(STORAGE_KEYS.REFRESH_TOKEN, mockTokens.refreshToken);
+      await StorageService.setJSON(STORAGE_KEYS.USER, mockUser);
+
+      setUser(mockUser, mockTokens);
+      console.log('[DEV] Auto-login avec tokens dev, navigation directe');
+      router.replace('/(tabs)/home');
+    };
+
+    // Petit délai pour laisser l'écran s'afficher
+    setTimeout(devLogin, 300);
+  }, [phone, setUser, router]);
 
   useEffect(() => {
     if (timer <= 0) return;

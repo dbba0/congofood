@@ -41,7 +41,7 @@ const RESTAURANTS: SeedRestaurant[] = [
   // ── 1. Chez Ntemba ────────────────────────────────────────────────
   {
     name: 'Chez Ntemba',
-    description: 'Cuisine traditionnelle congolaise authentique depuis 2005. Spécialités de la province de Bandundu.',
+    description: 'Congolais',
     category: 'food',
     address: { label: 'Avenue du Commerce, Gombe', coords: { lat: -4.3217, lng: 15.3222 }, quartier: 'Gombe' },
     isOpen: true,
@@ -62,7 +62,7 @@ const RESTAURANTS: SeedRestaurant[] = [
   // ── 2. Maman Lola ────────────────────────────────────────────────
   {
     name: 'Maman Lola',
-    description: 'Le goût de la maison. Poulet rôti légendaire et plats familiaux généreux.',
+    description: 'Congolais',
     category: 'food',
     address: { label: 'Boulevard du 30 Juin, Gombe', coords: { lat: -4.3198, lng: 15.3156 }, quartier: 'Gombe' },
     isOpen: true,
@@ -83,7 +83,7 @@ const RESTAURANTS: SeedRestaurant[] = [
   // ── 3. Pili-Pili Grillades ────────────────────────────────────────
   {
     name: 'Pili-Pili Grillades',
-    description: 'Les meilleures grillades de Kinshasa. Viandes marinées et cuites au charbon de bois.',
+    description: 'Grillades',
     category: 'food',
     address: { label: 'Avenue de la Libération, Gombe', coords: { lat: -4.3245, lng: 15.3189 }, quartier: 'Gombe' },
     isOpen: true,
@@ -104,7 +104,7 @@ const RESTAURANTS: SeedRestaurant[] = [
   // ── 4. Chez Philo ────────────────────────────────────────────────
   {
     name: 'Chez Philo',
-    description: 'Restaurant familial réputé pour ses sauces traditionnelles et son accueil chaleureux.',
+    description: 'Congolais',
     category: 'food',
     address: { label: 'Avenue du Colonel Ebeya, Gombe', coords: { lat: -4.3232, lng: 15.3201 }, quartier: 'Gombe' },
     isOpen: true,
@@ -125,7 +125,7 @@ const RESTAURANTS: SeedRestaurant[] = [
   // ── 5. Chez Bibi Fast Food ────────────────────────────────────────
   {
     name: 'Chez Bibi Fast Food',
-    description: 'Fast food à la kinoise. Poulet frit, burgers et sandwichs rapides et savoureux.',
+    description: 'Fast-food',
     category: 'food',
     address: { label: 'Boulevard du 30 Juin, Gombe', coords: { lat: -4.3178, lng: 15.3134 }, quartier: 'Gombe' },
     isOpen: true,
@@ -146,7 +146,7 @@ const RESTAURANTS: SeedRestaurant[] = [
   // ── 6. Chez Maman Colonel Grillades ───────────────────────────────
   {
     name: 'Chez Maman Colonel Grillades',
-    description: 'La légende des grillades à Lingwala. Marinade secrète transmise de génération en génération.',
+    description: 'Grillades',
     category: 'food',
     address: { label: 'Avenue Bokassa, Lingwala', coords: { lat: -4.3089, lng: 15.3267 }, quartier: 'Lingwala' },
     isOpen: true,
@@ -167,7 +167,7 @@ const RESTAURANTS: SeedRestaurant[] = [
   // ── 7. Madelia Fast Food ──────────────────────────────────────────
   {
     name: 'Madelia Fast Food',
-    description: 'Fast food moderne au cœur de Gombe. Burgers, wings et milkshakes.',
+    description: 'Fast-food',
     category: 'food',
     address: { label: 'Avenue Kasaï, Gombe', coords: { lat: -4.3156, lng: 15.3098 }, quartier: 'Gombe' },
     isOpen: true,

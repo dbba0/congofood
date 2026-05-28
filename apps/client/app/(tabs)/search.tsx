@@ -200,6 +200,7 @@ export default function SearchScreen() {
               <RestaurantCard
                 name={item.name}
                 category={item.category}
+                categoryLabel={item.description || item.category}
                 logoUrl={item.logo}
                 deliveryTime={item.estimatedPrepTime}
                 deliveryFee={0}

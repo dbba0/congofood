@@ -1,22 +1,23 @@
-// Détail restaurant — cover, infos, menu par catégorie, ajout panier
+// Fiche restaurant — Maquette ecran 06 Variation B
+// Cover pleine largeur · Back/Coeur overlays · Badges · Onglets · ProductCards · Panier sticky
 import { useState } from 'react';
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
-  SectionList,
   SafeAreaView,
 } from 'react-native';
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Typography, Spacing, BorderRadius } from '../../constants/theme';
 import { useRestaurant } from '../../hooks/useRestaurants';
 import type { MenuByCategory } from '../../hooks/useRestaurants';
 import { useCartStore } from '../../store/cartStore';
-import { ProductCard, Badge } from '@wapi/ui';
+import { ProductCard } from '@wapi/ui';
 import type { Product } from '@wapi/types';
 
 export default function RestaurantScreen() {
@@ -27,6 +28,7 @@ export default function RestaurantScreen() {
   const menu: MenuByCategory = data?.menu ?? {};
   const { addItem, updateQty, items } = useCartStore();
   const cartCount = useCartStore((s) => s.itemCount());
+  const cartTotal = useCartStore((s) => s.total());
 
   const [liked, setLiked] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -34,7 +36,7 @@ export default function RestaurantScreen() {
   const getQtyInCart = (productId: string) =>
     items.find((i) => i.product._id === productId)?.qty ?? 0;
 
-  // Le menu est déjà groupé par catégorie depuis l'API
+  // Le menu est deja groupe par categorie depuis l'API
   const allCategories = Object.keys(menu);
 
   const productsByCategory = allCategories
@@ -54,38 +56,11 @@ export default function RestaurantScreen() {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          title: '',
-          headerTransparent: true,
-          headerLeft: () => (
-            <TouchableOpacity
-              style={styles.headerBtn}
-              onPress={() => router.back()}
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            >
-              <Ionicons name="arrow-back" size={22} color={Colors.textPrimary} />
-            </TouchableOpacity>
-          ),
-          headerRight: () => (
-            <TouchableOpacity
-              style={styles.headerBtn}
-              onPress={() => setLiked(!liked)}
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            >
-              <Ionicons
-                name={liked ? 'heart' : 'heart-outline'}
-                size={22}
-                color={liked ? Colors.error : Colors.textPrimary}
-              />
-            </TouchableOpacity>
-          ),
-        }}
-      />
+      <Stack.Screen options={{ headerShown: false }} />
 
       <SafeAreaView style={styles.root}>
         <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
-          {/* Cover */}
+          {/* Cover image pleine largeur */}
           <View style={styles.cover}>
             {restaurant.coverImage ? (
               <Image
@@ -98,116 +73,143 @@ export default function RestaurantScreen() {
                 <Text style={styles.coverEmoji}>🍽️</Text>
               </View>
             )}
+
+            {/* Gradient en bas de la cover */}
+            <LinearGradient
+              colors={['transparent', Colors.background]}
+              style={styles.coverGradient}
+            />
+
+            {/* Back button rond overlay */}
+            <TouchableOpacity
+              style={[styles.overlayBtn, styles.backBtn]}
+              onPress={() => router.back()}
+              activeOpacity={0.7}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Ionicons name="arrow-back" size={20} color={Colors.textPrimary} />
+            </TouchableOpacity>
+
+            {/* Coeur rond overlay */}
+            <TouchableOpacity
+              style={[styles.overlayBtn, styles.favBtn]}
+              onPress={() => setLiked(!liked)}
+              activeOpacity={0.7}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Ionicons
+                name={liked ? 'heart' : 'heart-outline'}
+                size={20}
+                color={liked ? Colors.error : Colors.textPrimary}
+              />
+            </TouchableOpacity>
           </View>
 
           {/* Infos restaurant */}
-          <Animated.View entering={FadeInDown.duration(400)} style={styles.info}>
-            <View style={styles.infoRow}>
-              <View style={styles.logo}>
-                {restaurant.logo ? (
-                  <Image
-                    source={{ uri: restaurant.logo }}
-                    style={styles.logoImg}
-                    contentFit="cover"
-                  />
-                ) : (
-                  <Text style={styles.logoEmoji}>🏪</Text>
-                )}
-              </View>
-              <View style={styles.infoBadges}>
-                {restaurant.isOpen
-                  ? <Badge label="Ouvert" variant="success" size="sm" />
-                  : <Badge label="Fermé" variant="error" size="sm" />
-                }
-                {restaurant.isVerified && (
-                  <Badge label="Vérifié ✓" variant="info" size="sm" />
-                )}
-              </View>
-            </View>
-
+          <Animated.View entering={FadeInDown.duration(400)} style={styles.meta}>
             <Text style={styles.restaurantName}>{restaurant.name}</Text>
-            {restaurant.description && (
-              <Text style={styles.restaurantDesc}>{restaurant.description}</Text>
-            )}
 
-            <View style={styles.metaRow}>
-              {restaurant.rating && (
-                <View style={styles.metaItem}>
-                  <Text style={styles.metaEmoji}>⭐</Text>
-                  <Text style={styles.metaText}>
-                    {restaurant.rating.avg.toFixed(1)} ({restaurant.rating.count})
-                  </Text>
+            {/* Badges : categorie + ouvert/ferme */}
+            <View style={styles.badgeRow}>
+              <View style={styles.badgeCat}>
+                <Text style={styles.badgeCatText}>
+                  {(restaurant.category || 'food').toUpperCase()}
+                </Text>
+              </View>
+              {restaurant.isOpen ? (
+                <View style={styles.badgeOpen}>
+                  <View style={styles.badgeDot} />
+                  <Text style={styles.badgeOpenText}>OUVERT</Text>
+                </View>
+              ) : (
+                <View style={styles.badgeClosed}>
+                  <Text style={styles.badgeClosedText}>FERME</Text>
                 </View>
               )}
-              <View style={styles.metaItem}>
-                <Text style={styles.metaEmoji}>⏱️</Text>
-                <Text style={styles.metaText}>{restaurant.estimatedPrepTime} min</Text>
-              </View>
-              <View style={styles.metaItem}>
-                <Text style={styles.metaEmoji}>📍</Text>
-                <Text style={styles.metaText}>{restaurant.address?.quartier || 'Kinshasa'}</Text>
-              </View>
+            </View>
+
+            {/* Meta : note · avis · temps · distance · quartier */}
+            <View style={styles.metaRow}>
+              {restaurant.rating && (
+                <>
+                  <Text style={styles.metaStar}>★</Text>
+                  <Text style={styles.metaBold}>{restaurant.rating.avg.toFixed(1)}</Text>
+                  <Text style={styles.metaText}> · {restaurant.rating.count} avis</Text>
+                  <View style={styles.metaDot} />
+                </>
+              )}
+              <Text style={styles.metaText}>{restaurant.estimatedPrepTime} min</Text>
+              <View style={styles.metaDot} />
+              <Text style={styles.metaText}>{restaurant.address?.quartier || 'Kinshasa'}</Text>
             </View>
           </Animated.View>
 
-          {/* Filtre catégories */}
-          {allCategories.length > 1 && (
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.catList}
-              style={styles.catScroll}
-            >
-              <TouchableOpacity
-                style={[styles.catChip, !activeCategory && styles.catChipActive]}
-                onPress={() => setActiveCategory(null)}
+          {/* Onglets filtres scrollables — style maquette */}
+          {allCategories.length > 0 && (
+            <View style={styles.tabsContainer}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.tabsList}
               >
-                <Text style={[styles.catChipText, !activeCategory && styles.catChipTextActive]}>
-                  Tout
-                </Text>
-              </TouchableOpacity>
-              {allCategories.map((cat) => (
                 <TouchableOpacity
-                  key={cat}
-                  style={[styles.catChip, activeCategory === cat && styles.catChipActive]}
-                  onPress={() => setActiveCategory(cat === activeCategory ? null : cat)}
+                  style={styles.tab}
+                  onPress={() => setActiveCategory(null)}
+                  activeOpacity={0.7}
                 >
-                  <Text style={[styles.catChipText, activeCategory === cat && styles.catChipTextActive]}>
-                    {cat}
+                  <Text style={[styles.tabText, !activeCategory && styles.tabTextActive]}>
+                    Tout
                   </Text>
+                  {!activeCategory && <View style={styles.tabUnderline} />}
                 </TouchableOpacity>
-              ))}
-            </ScrollView>
+                {allCategories.map((cat) => (
+                  <TouchableOpacity
+                    key={cat}
+                    style={styles.tab}
+                    onPress={() => setActiveCategory(cat === activeCategory ? null : cat)}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={[styles.tabText, activeCategory === cat && styles.tabTextActive]}>
+                      {cat}
+                    </Text>
+                    {activeCategory === cat && <View style={styles.tabUnderline} />}
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
           )}
 
-          {/* Menu */}
+          {/* Menu — ProductCards directement sans padding wrapper */}
           {productsByCategory.map((section) => (
-            <View key={section.title} style={styles.section}>
-              <Text style={styles.sectionTitle}>{section.title}</Text>
+            <View key={section.title}>
+              {/* Titre section si plusieurs categories affichees */}
+              {!activeCategory && allCategories.length > 1 && (
+                <Text style={styles.sectionTitle}>{section.title}</Text>
+              )}
               {section.data.map((product) => (
-                <View key={product._id} style={styles.productWrap}>
-                  <ProductCard
-                    name={product.name}
-                    description={product.description}
-                    price={product.price}
-                    imageUrl={product.image}
-                    isAvailable={product.isAvailable}
-                    quantity={getQtyInCart(product._id)}
-                    onAdd={() => addItem(product, 1, [])}
-                    onRemove={() => {
-                      const qty = getQtyInCart(product._id);
-                      if (qty > 0) updateQty(product._id, qty - 1);
-                    }}
-                  />
-                </View>
+                <ProductCard
+                  key={product._id}
+                  name={product.name}
+                  description={product.description}
+                  price={product.price}
+                  imageUrl={product.image}
+                  isAvailable={product.isAvailable}
+                  quantity={getQtyInCart(product._id)}
+                  onAdd={() => addItem(product, 1, [])}
+                  onRemove={() => {
+                    const qty = getQtyInCart(product._id);
+                    if (qty > 0) updateQty(product._id, qty - 1);
+                  }}
+                />
               ))}
             </View>
           ))}
 
-          <View style={{ height: cartCount > 0 ? 100 : Spacing['2xl'] }} />
+          {/* Espace pour le bouton sticky */}
+          <View style={{ height: cartCount > 0 ? 100 : 40 }} />
         </ScrollView>
 
-        {/* Bouton panier sticky */}
+        {/* Bouton panier sticky en bas */}
         {cartCount > 0 && (
           <Animated.View entering={FadeInUp.duration(300)} style={styles.cartBar}>
             <TouchableOpacity
@@ -215,11 +217,12 @@ export default function RestaurantScreen() {
               onPress={() => router.push('/cart')}
               activeOpacity={0.85}
             >
-              <View style={styles.cartBadge}>
-                <Text style={styles.cartBadgeText}>{cartCount}</Text>
-              </View>
-              <Text style={styles.cartBtnText}>Voir le panier</Text>
-              <Ionicons name="arrow-forward" size={18} color={Colors.textInverse} />
+              <Text style={styles.cartBtnText}>
+                {cartCount} · Voir le panier →
+              </Text>
+              <Text style={styles.cartBtnPrice}>
+                {cartTotal.toLocaleString()} CDF
+              </Text>
             </TouchableOpacity>
           </Animated.View>
         )}
@@ -239,177 +242,229 @@ const styles = {
   loading: {
     flex: 1,
     backgroundColor: Colors.background,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
   },
   loadingText: {
     color: Colors.textSecondary,
     fontFamily: 'DMSans_400Regular',
   },
-  headerBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: Spacing.sm,
-  },
+
+  // ── Cover ──
   cover: {
-    height: 200,
+    height: 220,
+    width: '100%' as const,
+    position: 'relative' as const,
   },
   coverImage: {
-    width: '100%',
-    height: 200,
+    width: '100%' as const,
+    height: 220,
   },
   coverPlaceholder: {
-    backgroundColor: Colors.surfaceElevated,
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#1A1A2E',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
   },
   coverEmoji: {
-    fontSize: 48,
+    fontSize: 56,
+    opacity: 0.4,
   },
-  info: {
-    padding: Spacing.base,
-    backgroundColor: Colors.surface,
+  coverGradient: {
+    position: 'absolute' as const,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 80,
+  },
+  overlayBtn: {
+    position: 'absolute' as const,
+    width: 40,
+    height: 40,
+    borderRadius: 999,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+  },
+  backBtn: {
+    top: 52,
+    left: 16,
+  },
+  favBtn: {
+    top: 52,
+    right: 16,
+  },
+
+  // ── Meta restaurant ──
+  meta: {
+    paddingHorizontal: 20,
+    paddingBottom: 14,
+    marginTop: -10,
+    position: 'relative' as const,
+    zIndex: 1,
+  },
+  restaurantName: {
+    fontFamily: 'Syne_800ExtraBold',
+    fontSize: 24,
+    color: Colors.textPrimary,
+    letterSpacing: -0.3,
+    marginBottom: 8,
+  },
+  badgeRow: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 8,
+    marginBottom: 10,
+  },
+  badgeCat: {
+    backgroundColor: 'rgba(232,93,4,0.16)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 999,
+  },
+  badgeCatText: {
+    color: Colors.orange,
+    fontSize: 11,
+    fontWeight: '700' as const,
+    letterSpacing: 0.6,
+  },
+  badgeOpen: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 6,
+    backgroundColor: 'rgba(34,197,94,0.18)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 999,
+  },
+  badgeDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: Colors.success,
+  },
+  badgeOpenText: {
+    color: Colors.success,
+    fontSize: 11,
+    fontWeight: '700' as const,
+    letterSpacing: 0.6,
+  },
+  badgeClosed: {
+    backgroundColor: 'rgba(239,68,68,0.18)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 999,
+  },
+  badgeClosedText: {
+    color: Colors.error,
+    fontSize: 11,
+    fontWeight: '700' as const,
+    letterSpacing: 0.6,
+  },
+  metaRow: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    flexWrap: 'wrap' as const,
+    gap: 4,
+  },
+  metaStar: {
+    color: '#F59E0B',
+    fontSize: 13,
+  },
+  metaBold: {
+    color: Colors.textPrimary,
+    fontSize: 13,
+    fontFamily: 'DMSans_500Medium',
+    fontWeight: '600' as const,
+  },
+  metaText: {
+    color: Colors.textSecondary,
+    fontSize: 12,
+    fontFamily: 'DMSans_400Regular',
+  },
+  metaDot: {
+    width: 3,
+    height: 3,
+    borderRadius: 1.5,
+    backgroundColor: Colors.textMuted,
+    marginHorizontal: 2,
+  },
+
+  // ── Onglets filtres ──
+  tabsContainer: {
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
-  infoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: Spacing.sm,
+  tabsList: {
+    paddingHorizontal: 20,
+    gap: 20,
   },
-  logo: {
-    width: 56,
-    height: 56,
-    borderRadius: BorderRadius.md,
-    backgroundColor: Colors.surfaceElevated,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
+  tab: {
+    paddingVertical: 12,
+    position: 'relative' as const,
   },
-  logoImg: {
-    width: 56,
-    height: 56,
-  },
-  logoEmoji: {
-    fontSize: 24,
-  },
-  infoBadges: {
-    flexDirection: 'row',
-    gap: Spacing.xs,
-  },
-  restaurantName: {
-    fontFamily: 'Syne_700Bold',
-    fontSize: Typography.fontSize.xl,
-    color: Colors.textPrimary,
-    marginBottom: Spacing.xs,
-  },
-  restaurantDesc: {
-    fontFamily: 'DMSans_400Regular',
-    fontSize: Typography.fontSize.sm,
-    color: Colors.textSecondary,
-    lineHeight: 20,
-    marginBottom: Spacing.sm,
-  },
-  metaRow: {
-    flexDirection: 'row',
-    gap: Spacing.base,
-  },
-  metaItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  metaEmoji: {
+  tabText: {
     fontSize: 13,
-  },
-  metaText: {
-    fontFamily: 'DMSans_400Regular',
-    fontSize: Typography.fontSize.sm,
-    color: Colors.textSecondary,
-  },
-  catScroll: {
-    backgroundColor: Colors.surface,
-  },
-  catList: {
-    paddingHorizontal: Spacing.base,
-    paddingVertical: Spacing.sm,
-    gap: Spacing.sm,
-  },
-  catChip: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.xs,
-    borderRadius: BorderRadius.full,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    height: 32,
-    justifyContent: 'center',
-  },
-  catChipActive: {
-    backgroundColor: Colors.orange,
-    borderColor: Colors.orange,
-  },
-  catChipText: {
     fontFamily: 'DMSans_500Medium',
-    fontSize: Typography.fontSize.sm,
+    fontWeight: '600' as const,
     color: Colors.textSecondary,
   },
-  catChipTextActive: {
+  tabTextActive: {
     color: Colors.textPrimary,
   },
-  section: {
-    paddingTop: Spacing.base,
+  tabUnderline: {
+    position: 'absolute' as const,
+    bottom: -1,
+    left: 0,
+    right: 0,
+    height: 2,
+    backgroundColor: Colors.lime,
+    borderTopLeftRadius: 2,
+    borderTopRightRadius: 2,
   },
+
+  // ── Section titre ──
   sectionTitle: {
     fontFamily: 'Syne_600SemiBold',
-    fontSize: Typography.fontSize.base,
+    fontSize: 14,
     color: Colors.textSecondary,
-    paddingHorizontal: Spacing.base,
-    marginBottom: Spacing.sm,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 4,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 0.8,
   },
-  productWrap: {
-    paddingHorizontal: Spacing.base,
-    marginBottom: Spacing.sm,
-  },
+
+  // ── Bouton panier sticky ──
   cartBar: {
-    position: 'absolute',
+    position: 'absolute' as const,
     bottom: 0,
     left: 0,
     right: 0,
-    padding: Spacing.base,
-    backgroundColor: 'transparent',
+    paddingHorizontal: 20,
+    paddingBottom: 24,
+    paddingTop: 14,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+    backgroundColor: Colors.background,
   },
   cartBtn: {
     backgroundColor: Colors.lime,
     borderRadius: BorderRadius.lg,
     height: 56,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.sm,
-  },
-  cartBadge: {
-    backgroundColor: Colors.textInverse,
-    borderRadius: BorderRadius.full,
-    width: 24,
-    height: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cartBadgeText: {
-    fontFamily: 'Syne_700Bold',
-    fontSize: Typography.fontSize.sm,
-    color: Colors.lime,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'space-between' as const,
+    paddingHorizontal: 20,
   },
   cartBtnText: {
     fontFamily: 'Syne_700Bold',
-    fontSize: Typography.fontSize.base,
+    fontSize: 15,
     color: Colors.textInverse,
   },
-} as const;
+  cartBtnPrice: {
+    fontFamily: 'DMSans_500Medium',
+    fontSize: 14,
+    color: Colors.textInverse,
+    fontWeight: '600' as const,
+  },
+};

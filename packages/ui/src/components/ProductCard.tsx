@@ -1,3 +1,5 @@
+// ProductCard — Maquette ecran 06 Fiche Restaurant
+// Layout : info gauche (nom, desc 2 lignes, prix) | image 88x88 droite + bouton "+"
 import React from 'react';
 import {
   Image,
@@ -29,14 +31,18 @@ export function ProductCard({
 }: ProductCardProps) {
   return (
     <View style={[styles.card, !isAvailable && styles.cardUnavailable]}>
+      {/* Infos a gauche */}
       <View style={styles.info}>
         <Text style={styles.name} numberOfLines={2}>{name}</Text>
-        {description && (
+        {description ? (
           <Text style={styles.description} numberOfLines={2}>{description}</Text>
-        )}
-        <Text style={styles.price}>{price.toLocaleString()} FC</Text>
+        ) : null}
+        <View style={styles.pfoot}>
+          <Text style={styles.price}>{price.toLocaleString()} CDF</Text>
+        </View>
       </View>
 
+      {/* Image + bouton a droite */}
       <View style={styles.right}>
         {imageUrl ? (
           <Image source={{ uri: imageUrl }} style={styles.image} resizeMode="cover" />
@@ -46,30 +52,40 @@ export function ProductCard({
           </View>
         )}
 
-        {isAvailable && (
+        {isAvailable && quantity === 0 && (
+          <TouchableOpacity
+            style={styles.addBtn}
+            onPress={onAdd}
+            activeOpacity={0.8}
+            accessibilityLabel="Ajouter"
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Text style={styles.addBtnText}>+</Text>
+          </TouchableOpacity>
+        )}
+
+        {isAvailable && quantity > 0 && (
           <View style={styles.qtyRow}>
-            {quantity > 0 && onRemove && (
+            {onRemove && (
               <TouchableOpacity
                 style={styles.qtyBtn}
                 onPress={onRemove}
                 activeOpacity={0.8}
                 accessibilityLabel="Retirer"
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
               >
                 <Text style={styles.qtyBtnText}>−</Text>
               </TouchableOpacity>
             )}
-            {quantity > 0 && (
-              <Text style={styles.qtyCount}>{quantity}</Text>
-            )}
+            <Text style={styles.qtyCount}>{quantity}</Text>
             <TouchableOpacity
-              style={[styles.qtyBtn, styles.addBtn]}
+              style={[styles.qtyBtn, styles.qtyBtnPlus]}
               onPress={onAdd}
               activeOpacity={0.8}
               accessibilityLabel="Ajouter"
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
             >
-              <Text style={[styles.qtyBtnText, styles.addBtnText]}>+</Text>
+              <Text style={[styles.qtyBtnText, styles.qtyBtnPlusText]}>+</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -84,13 +100,12 @@ export function ProductCard({
 
 const styles = {
   card: {
-    backgroundColor: '#1A1A2E',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#2D2D3D',
     flexDirection: 'row' as const,
-    padding: 12,
     gap: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#2D2D3D',
   },
   cardUnavailable: {
     opacity: 0.5,
@@ -98,33 +113,36 @@ const styles = {
   info: {
     flex: 1,
     gap: 4,
-    justifyContent: 'center' as const,
+    minWidth: 0,
   },
   name: {
     color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '700' as const,
+    fontSize: 15,
+    fontFamily: 'Syne_700Bold',
   },
   description: {
     color: '#9CA3AF',
     fontSize: 12,
     lineHeight: 17,
   },
+  pfoot: {
+    marginTop: 'auto' as unknown as number,
+    paddingTop: 6,
+  },
   price: {
-    color: '#C8FF57',
+    color: '#E85D04',
     fontSize: 14,
-    fontWeight: '700' as const,
-    marginTop: 4,
+    fontFamily: 'DMSans_500Medium',
+    fontWeight: '600' as const,
   },
   right: {
     alignItems: 'center' as const,
-    justifyContent: 'space-between' as const,
     gap: 8,
   },
   image: {
-    width: 72,
-    height: 72,
-    borderRadius: 8,
+    width: 88,
+    height: 88,
+    borderRadius: 10,
   },
   imagePlaceholder: {
     backgroundColor: '#2D2D3D',
@@ -132,23 +150,42 @@ const styles = {
     justifyContent: 'center' as const,
   },
   imagePlaceholderText: {
-    fontSize: 28,
+    fontSize: 32,
   },
+  // Bouton "+" circulaire lime
+  addBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 999,
+    backgroundColor: '#C8FF57',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    marginTop: -22,
+  },
+  addBtnText: {
+    color: '#0A0A0F',
+    fontSize: 22,
+    fontWeight: '700' as const,
+    lineHeight: 24,
+  },
+  // Compteur quantite : − qty +
   qtyRow: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
     gap: 8,
+    marginTop: -18,
   },
   qtyBtn: {
-    width: 28,
-    height: 28,
-    borderRadius: 8,
+    width: 30,
+    height: 30,
+    borderRadius: 999,
     borderWidth: 1.5,
     borderColor: '#2D2D3D',
+    backgroundColor: '#1A1A2E',
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
   },
-  addBtn: {
+  qtyBtnPlus: {
     backgroundColor: '#C8FF57',
     borderColor: '#C8FF57',
   },
@@ -158,18 +195,19 @@ const styles = {
     fontWeight: '700' as const,
     lineHeight: 18,
   },
-  addBtnText: {
+  qtyBtnPlusText: {
     color: '#0A0A0F',
   },
   qtyCount: {
     color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '700' as const,
+    fontSize: 15,
+    fontFamily: 'Syne_700Bold',
     minWidth: 16,
     textAlign: 'center' as const,
   },
   unavailable: {
     color: '#4B5563',
     fontSize: 10,
+    fontWeight: '600' as const,
   },
 };

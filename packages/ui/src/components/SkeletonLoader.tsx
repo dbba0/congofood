@@ -40,6 +40,7 @@ export function SkeletonLoader({
   );
 }
 
+/** Skeleton pour RestaurantCard variant="list" (horizontale) */
 export function SkeletonRestaurantCard() {
   return (
     <View style={styles.card}>
@@ -53,10 +54,25 @@ export function SkeletonRestaurantCard() {
   );
 }
 
+/** Skeleton pour RestaurantCard variant="grid" (grille 2 colonnes) */
+export function SkeletonRestaurantGridCard() {
+  return (
+    <View style={styles.gridCard}>
+      <SkeletonLoader height={140} borderRadius={0} />
+      <View style={styles.gridCardLines}>
+        <SkeletonLoader height={14} borderRadius={4} />
+        <SkeletonLoader width="50%" height={10} borderRadius={4} />
+        <SkeletonLoader width="70%" height={10} borderRadius={4} />
+      </View>
+    </View>
+  );
+}
+
 const styles = {
   base: {
     backgroundColor: '#2D2D3D',
   },
+  // Skeleton list
   card: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
@@ -69,6 +85,19 @@ const styles = {
   },
   cardLines: {
     flex: 1,
+    gap: 8,
+  },
+  // Skeleton grid
+  gridCard: {
+    flex: 1,
+    backgroundColor: '#1A1A2E',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#2D2D3D',
+    overflow: 'hidden' as const,
+  },
+  gridCardLines: {
+    padding: 12,
     gap: 8,
   },
 };

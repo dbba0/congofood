@@ -16,6 +16,7 @@ import {
   DMSans_500Medium,
 } from '@expo-google-fonts/dm-sans';
 import { useAuthStore } from '../store/authStore';
+import { useCartStore } from '../store/cartStore';
 import { StorageService, STORAGE_KEYS } from '../lib/storage';
 import { Colors } from '../constants/theme';
 import type { AuthUser, AuthTokens } from '@wapi/types';
@@ -58,6 +59,9 @@ export default function RootLayout() {
       } else {
         setLoading(false);
       }
+
+      // Restaurer le panier persisté
+      await useCartStore.getState().hydrate();
 
       SplashScreen.hideAsync();
     })();

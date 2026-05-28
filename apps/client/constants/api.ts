@@ -1,8 +1,9 @@
 // Points d'entrée de l'API Wapi
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
 
-// Mode développement — désactive les appels OTP réels
-export const DEV_MODE = __DEV__;
+// Mode développement — bypass OTP, tokens dev locaux
+// Actif si __DEV__ (Expo dev) OU si EXPO_PUBLIC_DEV_MODE=true dans .env
+export const DEV_MODE = __DEV__ || process.env.EXPO_PUBLIC_DEV_MODE === 'true';
 
 export const API = {
   sendOtp:     `${BASE_URL}/api/auth/send-otp`,

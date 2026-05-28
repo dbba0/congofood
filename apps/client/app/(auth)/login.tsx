@@ -57,6 +57,15 @@ export default function LoginScreen() {
     if (!canSubmit) return;
     setLoading(true);
     setError('');
+
+    // Mode dev : naviguer directement sans appeler le backend
+    if (DEV_MODE) {
+      console.log('[DEV] Skip send-otp, navigation directe vers OTP');
+      router.push({ pathname: '/(auth)/otp-verify', params: { phone: fullPhone } });
+      setLoading(false);
+      return;
+    }
+
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000);
 

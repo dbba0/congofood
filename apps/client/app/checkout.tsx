@@ -65,19 +65,22 @@ export default function CheckoutScreen() {
     setLoading(true);
     setError('');
     try {
+      // Le backend attend productId (pas product) et recalcule les prix côté serveur
       const body = {
         restaurantId,
         items: items.map((i) => ({
-          product:         i.product._id,
-          name:            i.product.name,
-          price:           i.unitPrice,
+          productId:       i.product._id,
           qty:             i.qty,
-          selectedOptions: i.selectedOptions,
+          selectedOptions: i.selectedOptions.map((o) => ({
+            name:       o.optionName,
+            choice:     o.choiceLabel,
+            priceDelta: o.priceDelta,
+          })),
         })),
         deliveryAddress: {
-          label:        quartier,
-          instructions: instructions || undefined,
+          label:        `${quartier}, Kinshasa`,
           coords:       { lat: -4.3229, lng: 15.3222 }, // Coordonnées Kinshasa centre
+          instructions: instructions || undefined,
         },
         paymentMethod,
         notes: note || undefined,

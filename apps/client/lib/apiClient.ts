@@ -61,9 +61,13 @@ export async function apiRequest<T>(
   // Debug — supprimer après vérification
   console.log('[API] Response status:', response.status);
 
-  // Si 401 → tenter un refresh puis rejouer la requête
+  // Si 401 → vérifier si c'est un token dev (pas de refresh possible)
   if (response.status === 401) {
-    if (isRefreshing) {
+    // Token dev → pas de refresh, on laisse passer sans logout
+    if (accessToken?.startsWith('dev-token-')) {
+      console.warn('[API] Token dev rejeté (401) — requête auth ignorée pour:', url);
+      // Retourner la réponse telle quelle, le json sera parsé plus bas
+    } else if (isRefreshing) {
       const newToken = await new Promise<string>((resolve) => {
         refreshQueue.push(resolve);
       });

@@ -1,4 +1,4 @@
-// Écran d'accueil — Variation B Vibrant & Communauté
+// Ecran d'accueil — Variation B Vibrant & Communaute — Grille 2 colonnes
 import { useState, useEffect } from 'react';
 import {
   View,
@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   FlatList,
   Pressable,
+  Dimensions,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -18,7 +19,7 @@ import { useAuthStore } from '../../store/authStore';
 import { useCartStore } from '../../store/cartStore';
 import { useRestaurants } from '../../hooks/useRestaurants';
 import { StorageService, STORAGE_KEYS } from '../../lib/storage';
-import { RestaurantCard, SkeletonRestaurantCard, EmptyState } from '@wapi/ui';
+import { RestaurantCard, SkeletonRestaurantGridCard, EmptyState } from '@wapi/ui';
 import type { Restaurant } from '@wapi/types';
 
 interface Categorie {
@@ -30,7 +31,7 @@ interface Categorie {
 
 const CATEGORIES: Categorie[] = [
   { id: 'food',      label: 'Food',     emoji: '🍗', color: '#E85D04' },
-  { id: 'grocery',   label: 'Épicerie', emoji: '🛒', color: '#22C55E' },
+  { id: 'grocery',   label: 'Epicerie', emoji: '🛒', color: '#22C55E' },
   { id: 'drinks',    label: 'Boissons', emoji: '🍺', color: '#3B82F6' },
   { id: 'fastfood',  label: 'Fast-food',emoji: '🍕', color: '#F59E0B' },
   { id: 'healthy',   label: 'Sain',     emoji: '🥗', color: '#10B981' },
@@ -49,13 +50,13 @@ export default function HomeScreen() {
     });
   }, []);
 
-  const { data: restaurants, isLoading, error } = useRestaurants(quartier);
+  const { data: restaurants, isLoading } = useRestaurants(quartier);
 
   const filtered = activeCategory
     ? restaurants?.filter((r) => r.category === activeCategory)
     : restaurants;
 
-  const firstName = user?.name?.split(' ')[0] || 'là';
+  const firstName = user?.name?.split(' ')[0] || 'la';
 
   return (
     <SafeAreaView style={styles.root}>
@@ -92,7 +93,7 @@ export default function HomeScreen() {
             activeOpacity={0.7}
           >
             <Text style={styles.addressPin}>📍</Text>
-            <Text style={styles.addressLabel}>Livrer à :</Text>
+            <Text style={styles.addressLabel}>Livrer a :</Text>
             <Text style={styles.addressValue}>{quartier}</Text>
             <Ionicons name="chevron-down" size={14} color={Colors.orange} />
           </TouchableOpacity>
@@ -106,12 +107,12 @@ export default function HomeScreen() {
           >
             <Ionicons name="search-outline" size={18} color={Colors.textMuted} />
             <Text style={styles.searchPlaceholder}>
-              Restaurants, plats, épicerie...
+              Restaurants, plats, epicerie...
             </Text>
           </Pressable>
         </Animated.View>
 
-        {/* Catégories */}
+        {/* Categories */}
         <Animated.View entering={FadeInDown.delay(160).duration(400)}>
           <FlatList
             horizontal
@@ -143,7 +144,7 @@ export default function HomeScreen() {
           />
         </Animated.View>
 
-        {/* Bannière promo */}
+        {/* Banniere promo */}
         <Animated.View entering={FadeInDown.delay(200).duration(400)} style={styles.bannerWrap}>
           <LinearGradient
             colors={['#7C3AED', '#E85D04']}
@@ -153,7 +154,7 @@ export default function HomeScreen() {
           >
             <View>
               <Text style={styles.bannerTitle}>
-                1ère commande = livraison offerte 🎉
+                1ere commande = livraison offerte 🎉
               </Text>
               <Text style={styles.bannerCode}>CODE · KIN2026</Text>
             </View>
@@ -161,44 +162,79 @@ export default function HomeScreen() {
           </LinearGradient>
         </Animated.View>
 
-        {/* Section restaurants */}
+        {/* Section restaurants — Grille 2 colonnes */}
         <Animated.View entering={FadeInDown.delay(240).duration(400)}>
-          <Text style={styles.sectionTitle}>
-            Près de toi · {quartier}
-          </Text>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>
+              Pres de toi <Text style={styles.sectionAccent}>a {quartier}</Text>
+            </Text>
+            <TouchableOpacity
+              onPress={() => router.push('/(tabs)/search')}
+              activeOpacity={0.7}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Text style={styles.sectionLink}>Voir tout →</Text>
+            </TouchableOpacity>
+          </View>
 
           {isLoading ? (
-            <>
-              <SkeletonRestaurantCard />
-              <SkeletonRestaurantCard />
-              <SkeletonRestaurantCard />
-            </>
-          ) : filtered && filtered.length > 0 ? (
-            filtered.map((restaurant: Restaurant) => (
-              <View key={restaurant._id} style={styles.cardWrap}>
-                <RestaurantCard
-                  name={restaurant.name}
-                  category={restaurant.category}
-                  logoUrl={restaurant.logo}
-                  deliveryTime={restaurant.estimatedPrepTime}
-                  deliveryFee={0}
-                  rating={restaurant.rating?.avg}
-                  isOpen={restaurant.isOpen}
-                  onPress={() => router.push(`/restaurant/${restaurant._id}`)}
-                />
+            <View style={styles.gridContainer}>
+              <View style={styles.gridRow}>
+                <SkeletonRestaurantGridCard />
+                <SkeletonRestaurantGridCard />
               </View>
-            ))
+              <View style={styles.gridRow}>
+                <SkeletonRestaurantGridCard />
+                <SkeletonRestaurantGridCard />
+              </View>
+            </View>
+          ) : filtered && filtered.length > 0 ? (
+            <View style={styles.gridContainer}>
+              {/* Grille manuelle 2 colonnes — pas de FlatList imbriquee */}
+              {chunkArray(filtered, 2).map((row, rowIdx) => (
+                <View key={rowIdx} style={styles.gridRow}>
+                  {row.map((restaurant: Restaurant) => (
+                    <RestaurantCard
+                      key={restaurant._id}
+                      name={restaurant.name}
+                      category={restaurant.category}
+                      categoryLabel={restaurant.description || restaurant.category}
+                      coverUrl={restaurant.coverImage}
+                      logoUrl={restaurant.logo}
+                      deliveryTime={restaurant.estimatedPrepTime}
+                      deliveryFee={0}
+                      rating={restaurant.rating?.avg}
+                      isOpen={restaurant.isOpen}
+                      variant="grid"
+                      style={styles.gridCard}
+                      onPress={() => router.push(`/restaurant/${restaurant._id}`)}
+                    />
+                  ))}
+                  {/* Spacer si nombre impair */}
+                  {row.length === 1 && <View style={styles.gridCard} />}
+                </View>
+              ))}
+            </View>
           ) : (
             <EmptyState
               emoji="🍽️"
               title="Aucun restaurant pour l'instant"
-              subtitle={`Pas encore de partenaire à ${quartier}, on arrive bientôt !`}
+              subtitle={`Pas encore de partenaire a ${quartier}, on arrive bientot !`}
             />
           )}
         </Animated.View>
       </ScrollView>
     </SafeAreaView>
   );
+}
+
+/** Decoupe un tableau en groupes de N */
+function chunkArray<T>(arr: T[], size: number): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < arr.length; i += size) {
+    chunks.push(arr.slice(i, i + size));
+  }
+  return chunks;
 }
 
 const styles = {
@@ -213,9 +249,9 @@ const styles = {
     paddingBottom: Spacing['2xl'],
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'space-between' as const,
     paddingHorizontal: Spacing.base,
     paddingTop: Spacing.base,
     paddingBottom: Spacing.sm,
@@ -233,29 +269,29 @@ const styles = {
   cartBtn: {
     width: 44,
     height: 44,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
   },
   cartBadge: {
-    position: 'absolute',
+    position: 'absolute' as const,
     top: 4,
     right: 4,
     backgroundColor: Colors.orange,
     borderRadius: 8,
     minWidth: 16,
     height: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
     paddingHorizontal: 3,
   },
   cartBadgeText: {
     fontSize: 9,
     color: Colors.textPrimary,
-    fontWeight: 'bold',
+    fontWeight: 'bold' as const,
   },
   addressRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     paddingHorizontal: Spacing.base,
     paddingVertical: Spacing.sm,
     gap: 4,
@@ -275,8 +311,8 @@ const styles = {
     color: Colors.orange,
   },
   searchBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     backgroundColor: '#1A1A2E',
     borderRadius: BorderRadius.md,
     marginHorizontal: Spacing.base,
@@ -298,8 +334,8 @@ const styles = {
     gap: Spacing.sm,
   },
   catChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     borderRadius: BorderRadius.full,
     borderWidth: 1.5,
     paddingHorizontal: Spacing.md,
@@ -325,9 +361,9 @@ const styles = {
   banner: {
     borderRadius: BorderRadius.lg,
     padding: Spacing.base,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'space-between' as const,
   },
   bannerTitle: {
     fontFamily: 'Syne_600SemiBold',
@@ -344,15 +380,38 @@ const styles = {
   bannerEmoji: {
     fontSize: 32,
   },
+  // ── Section titre ──
+  sectionHeader: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'space-between' as const,
+    paddingHorizontal: Spacing.base,
+    marginBottom: Spacing.md,
+  },
   sectionTitle: {
     fontFamily: 'Syne_700Bold',
-    fontSize: Typography.fontSize.md,
+    fontSize: 20,
     color: Colors.textPrimary,
-    paddingHorizontal: Spacing.base,
-    marginBottom: Spacing.sm,
   },
-  cardWrap: {
-    paddingHorizontal: Spacing.base,
-    marginBottom: Spacing.sm,
+  sectionAccent: {
+    color: Colors.orange,
   },
-} as const;
+  sectionLink: {
+    fontFamily: 'DMSans_500Medium',
+    fontSize: 12,
+    fontWeight: '600' as const,
+    color: Colors.lime,
+  },
+  // ── Grille 2 colonnes ──
+  gridContainer: {
+    paddingHorizontal: Spacing.base,
+    gap: 12,
+  },
+  gridRow: {
+    flexDirection: 'row' as const,
+    gap: 12,
+  },
+  gridCard: {
+    flex: 1,
+  },
+};
